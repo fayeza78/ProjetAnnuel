@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   mongodb:
     image: mongo:7
@@ -15,6 +13,7 @@ services:
       - mongo_data:/data/db
     networks:
       - cn_network
+
   neo4j:
     image: neo4j:5
     container_name: NEO4J_CONTAINER
@@ -23,7 +22,8 @@ services:
       - "7474:7474"
       - "7687:7687"
     environment:
-      NEO4J_AUTH: neo4j/secret
+      NEO4J_AUTH: neo4j/neo4jadmin
+    
     volumes:
       - neo4j_data:/data
     networks:
@@ -43,6 +43,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - cn_network
+
 volumes:
   mongo_data:
   neo4j_data:
