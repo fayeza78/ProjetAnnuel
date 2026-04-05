@@ -5,8 +5,7 @@ import { initHandlers } from "./Handlers/routes.js"
 import { AppDataSource_MongoDB, AppDataSource_PostgreSQL, neo4jDriver } from "./Database/database.js"
 
 console.log("API is starting...")
-
-
+console.log("App is listening on port " + process.env.IP + ":" + process.env.PORT)
 
 const app = express()
 const PORT = process.env.PORT || 3000
