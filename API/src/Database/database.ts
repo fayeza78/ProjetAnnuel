@@ -1,11 +1,17 @@
 import "dotenv/config"
 import { DataSource } from "typeorm";
 import neo4j from "neo4j-driver"
-// import { Product } from "./entities/product.js";
-// import { User } from "./entities/user.js";
-// import { Token } from "./entities/token.js";
+import { House } from "./Entites_PostGreSQL/house_POSTGRE.js";
+import { Apartment } from "./Entites_PostGreSQL/appartment_POSTGRE.js";
+import { Family } from "./Entites_PostGreSQL/family_POSTGRE.js";
+import { Neighborhood } from "./Entites_PostGreSQL/Neighborhood_POSTGRE.js";
+import { Event } from "./Entites_PostGreSQL/event_POSTGRE.js";
+import { Inhabitant } from "./Entites_PostGreSQL/Inhabitant_POSTGRE.js";
+import { EventMongo } from "./Entites_MongoDB/event_MONGO.js";
+import { InhabitantMongo } from "./Entites_MongoDB/inhabitants_MONGO.js";
+import { NeighborhoodMongo } from "./Entites_MongoDB/neighborhood_MONGO.js";
 
-console.log(process.env.DB_HOST)
+console.log("BDD = ",process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, process.env.POSTGRES_DB, process.env.POSTGRES_HOST)
 
 export const AppDataSource_PostgreSQL = new DataSource({
     type: "postgres",
@@ -16,8 +22,9 @@ export const AppDataSource_PostgreSQL = new DataSource({
     database: process.env.POSTGRES_DB || "connected_neighbours",
     synchronize: true,
     logging: true,
-    entities: []
-})
+    entities: [Inhabitant, House, Apartment, Family, Neighborhood, Event]
+}
+)
  
 export const AppDataSource_MongoDB = new DataSource({
     type: "mongodb",
@@ -29,7 +36,7 @@ export const AppDataSource_MongoDB = new DataSource({
     authSource: "admin",
     synchronize: true,
     logging: true,
-    entities: []
+    entities: [EventMongo, InhabitantMongo, NeighborhoodMongo]
 })
  
 export const neo4jDriver = neo4j.driver(

@@ -11,5 +11,5 @@ export const initHandlers = (app: Application) => {
     })
 
     app.get("/Status", Status)
- 
+    
 }

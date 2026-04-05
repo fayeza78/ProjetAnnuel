@@ -1,7 +1,7 @@
 docker compose up -d
 
 npm init -y && npm i -D typescript && npx tsc -init && npm i -D tsx
-
+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
 
 # Dépendance
     // Express.js installation permet de créer un serveur web pour gérer les requêtes HTTP et les routes de l'API.
