@@ -19,7 +19,10 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        DatabaseConnection.startup();
+       // DatabaseConnection.startup();
+
+        //stage.setTitle("TEST DE MISE A JOUR");
+
         scene = new Scene(loadFXML("primary"), 640, 480);
         stage.setScene(scene);
         stage.show();

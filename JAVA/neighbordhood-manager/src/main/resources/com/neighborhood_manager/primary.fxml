@@ -2,100 +2,155 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.effect.DropShadow?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import javafx.geometry.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.neighborhood_manager.PrimaryController"
-            style="-fx-background-color: #1a1a2e;">
+            style="-fx-background-color: #1A2639; -fx-font-family: 'Segoe UI', sans-serif;">
 
     <top>
-        <HBox style="-fx-background-color: #16213e; -fx-padding: 12 20 12 20; -fx-spacing: 10; -fx-alignment: CENTER_LEFT;"
+        <HBox style="-fx-background-color: #233348; -fx-padding: 15 25 15 25; -fx-spacing: 15; -fx-alignment: CENTER_LEFT; -fx-border-color: transparent transparent #2E435E transparent; -fx-border-width: 0 0 1 0;"
               BorderPane.alignment="CENTER">
-            <Label text="🏘 NeighborHub"
-                   style="-fx-text-fill: #e94560; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+            <VBox alignment="CENTER" spacing="-5">
+                <HBox alignment="CENTER">
+                    <Label text="petits" style="-fx-text-fill: #0CA789; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                    <Label text="secrets" style="-fx-text-fill: #0CA789; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                </HBox>
+                <Label text="entrevoisins" style="-fx-text-fill: #F29C38; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+            </VBox>
+
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="🏠  Accueil" fx:id="btnHome" onAction="#goHome"
-                    style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
-            <Button text="👥  Voisins" fx:id="btnVoisins" onAction="#goVoisins"
-                    style="-fx-background-color: transparent; -fx-text-fill: #a8b2d8; -fx-font-size: 13px; -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
-            <Button text="📢  Annonces" fx:id="btnAnnonces" onAction="#goAnnonces"
-                    style="-fx-background-color: transparent; -fx-text-fill: #a8b2d8; -fx-font-size: 13px; -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
-            <Button text="💬  Messages" fx:id="btnMessages" onAction="#goMessages"
-                    style="-fx-background-color: transparent; -fx-text-fill: #a8b2d8; -fx-font-size: 13px; -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
-            <Region style="-fx-min-width: 20;"/>
-            <Button text="⚙" fx:id="btnSettings" onAction="#goSettings"
-                    style="-fx-background-color: #0f3460; -fx-text-fill: #a8b2d8; -fx-font-size: 16px; -fx-padding: 8 12 8 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
-            <Button text="👤"
-                    style="-fx-background-color: #0f3460; -fx-text-fill: #a8b2d8; -fx-font-size: 16px; -fx-padding: 8 12 8 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+            <Button text="Accueil" fx:id="btnHome" onAction="#goHome"
+                    style="-fx-background-color: #F29C38; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;
+                           -fx-padding: 8 18 8 18; -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+            <Button text="Voisins" fx:id="btnVoisins" onAction="#goVoisins"
+                    style="-fx-background-color: transparent; -fx-text-fill: #8BA0B8; -fx-font-size: 14px; -fx-font-weight: bold;
+                           -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+            <Button text="Annonces" fx:id="btnAnnonces" onAction="#goAnnonces"
+                    style="-fx-background-color: transparent; -fx-text-fill: #8BA0B8; -fx-font-size: 14px; -fx-font-weight: bold;
+                           -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+            <Button text="Incidents" fx:id="btnIncidents" onAction="#goIncidents"
+                    style="-fx-background-color: transparent; -fx-text-fill: #8BA0B8; -fx-font-size: 14px; -fx-font-weight: bold;
+                           -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+            <Button text="Messages" fx:id="btnMessages" onAction="#goMessages"
+                    style="-fx-background-color: transparent; -fx-text-fill: #8BA0B8; -fx-font-size: 14px; -fx-font-weight: bold;
+                           -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+            <Region style="-fx-min-width: 30;"/>
+
+            <Button text="Paramètres" fx:id="btnSettings" onAction="#goSettings"
+                    style="-fx-background-color: #1A2639; -fx-text-fill: #8BA0B8; -fx-font-size: 14px;
+                           -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #2E435E; -fx-border-radius: 8;"/>
+
+            <Button text="Profil" fx:id="btnProfil"
+                    style="-fx-background-color: #1A2639; -fx-text-fill: #8BA0B8; -fx-font-size: 14px;
+                           -fx-padding: 8 16 8 16; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #2E435E; -fx-border-radius: 8;"/>
         </HBox>
     </top>
 
     <center>
-        <VBox spacing="24" style="-fx-padding: 40 60 40 60;" alignment="TOP_CENTER">
+        <VBox spacing="30" style="-fx-padding: 40 60 40 60;" alignment="TOP_CENTER">
+
             <HBox spacing="10" alignment="CENTER">
-                <TextField fx:id="searchField" promptText="🔍  Rechercher dans le quartier..."
-                           style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #a8b2d8; -fx-font-size: 14px; -fx-padding: 10 16 10 16; -fx-background-radius: 10; -fx-border-color: #0f3460; -fx-border-radius: 10;"
-                           HBox.hgrow="ALWAYS" maxWidth="600"/>
+                <TextField fx:id="searchField" promptText="Rechercher dans le quartier..."
+                           style="-fx-background-color: #233348; -fx-text-fill: white;
+                                  -fx-prompt-text-fill: #8BA0B8; -fx-font-size: 15px;
+                                  -fx-padding: 12 20 12 20; -fx-background-radius: 25;
+                                  -fx-border-color: #2E435E; -fx-border-radius: 25;"
+                           HBox.hgrow="ALWAYS" maxWidth="650"/>
             </HBox>
-            <HBox spacing="20" alignment="CENTER">
+
+            <HBox spacing="25" alignment="CENTER">
+
                 <VBox spacing="10" alignment="CENTER"
-                      style="-fx-background-color: #16213e; -fx-padding: 30; -fx-background-radius: 14; -fx-border-color: #0f3460; -fx-border-radius: 14; -fx-min-width: 180;">
-                    <Label text="👥" style="-fx-font-size: 36px;"/>
-                    <Label text="Voisins" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-                    <Label text="24 connectés" style="-fx-text-fill: #a8b2d8; -fx-font-size: 12px;"/>
+                      style="-fx-background-color: #233348; -fx-padding: 30; -fx-background-radius: 16;
+                             -fx-border-color: #2E435E; -fx-border-radius: 16; -fx-min-width: 190;">
+                    <effect><DropShadow color="#00000040" radius="10" offsetY="4"/></effect>
+                    <Label text="Voisins" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <Label text="24 connectés" style="-fx-text-fill: #8BA0B8; -fx-font-size: 13px;"/>
                 </VBox>
+
                 <VBox spacing="10" alignment="CENTER"
-                      style="-fx-background-color: #16213e; -fx-padding: 30; -fx-background-radius: 14; -fx-border-color: #e94560; -fx-border-radius: 14; -fx-min-width: 180;">
-                    <Label text="📢" style="-fx-font-size: 36px;"/>
-                    <Label text="Annonces" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-                    <Label text="3 nouvelles" style="-fx-text-fill: #e94560; -fx-font-size: 12px;"/>
+                      style="-fx-background-color: #233348; -fx-padding: 30; -fx-background-radius: 16;
+                             -fx-border-color: #F29C38; -fx-border-radius: 16; -fx-min-width: 190; -fx-border-width: 2;">
+                    <effect><DropShadow color="#f29c3830" radius="15" offsetY="4"/></effect>
+                    <Label text="Annonces" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <Label text="3 nouvelles" style="-fx-text-fill: #F29C38; -fx-font-size: 13px; -fx-font-weight: bold;"/>
                 </VBox>
+
                 <VBox spacing="10" alignment="CENTER"
-                      style="-fx-background-color: #16213e; -fx-padding: 30; -fx-background-radius: 14; -fx-border-color: #0f3460; -fx-border-radius: 14; -fx-min-width: 180;">
-                    <Label text="💬" style="-fx-font-size: 36px;"/>
-                    <Label text="Messages" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-                    <Label text="7 non lus" style="-fx-text-fill: #a8b2d8; -fx-font-size: 12px;"/>
+                      style="-fx-background-color: #233348; -fx-padding: 30; -fx-background-radius: 16;
+                             -fx-border-color: #2E435E; -fx-border-radius: 16; -fx-min-width: 190;">
+                    <effect><DropShadow color="#00000040" radius="10" offsetY="4"/></effect>
+                    <Label text="Messages" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <Label text="7 non lus" style="-fx-text-fill: #8BA0B8; -fx-font-size: 13px;"/>
                 </VBox>
+
                 <VBox spacing="10" alignment="CENTER"
-                      style="-fx-background-color: #16213e; -fx-padding: 30; -fx-background-radius: 14; -fx-border-color: #0f3460; -fx-border-radius: 14; -fx-min-width: 180;">
-                    <Label text="🗺" style="-fx-font-size: 36px;"/>
-                    <Label text="Carte" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-                    <Label text="Mon quartier" style="-fx-text-fill: #a8b2d8; -fx-font-size: 12px;"/>
+                      style="-fx-background-color: #233348; -fx-padding: 30; -fx-background-radius: 16;
+                             -fx-border-color: #2E435E; -fx-border-radius: 16; -fx-min-width: 190;">
+                    <effect><DropShadow color="#00000040" radius="10" offsetY="4"/></effect>
+                    <Label text="Carte" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <Label text="Mon quartier" style="-fx-text-fill: #8BA0B8; -fx-font-size: 13px;"/>
                 </VBox>
+
             </HBox>
-            <VBox spacing="12"
-                  style="-fx-background-color: #16213e; -fx-padding: 20; -fx-background-radius: 14; -fx-border-color: #0f3460; -fx-border-radius: 14;" maxWidth="760">
-                <Label text="Activité récente" style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;"/>
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="📌" style="-fx-font-size: 16px;"/>
+
+            <VBox spacing="15"
+                  style="-fx-background-color: #233348; -fx-padding: 25; -fx-background-radius: 16;
+                         -fx-border-color: #2E435E; -fx-border-radius: 16;" maxWidth="835">
+                <effect><DropShadow color="#00000040" radius="10" offsetY="4"/></effect>
+
+                <Label text="Activité récente"
+                       style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 10 0;"/>
+
+                <HBox spacing="15" alignment="CENTER_LEFT">
                     <VBox>
-                        <Label text="Marie D. a posté une annonce" style="-fx-text-fill: #e2e8f0; -fx-font-size: 13px;"/>
-                        <Label text="Il y a 5 minutes" style="-fx-text-fill: #a8b2d8; -fx-font-size: 11px;"/>
+                        <Label text="Marie D. a posté une annonce"
+                               style="-fx-text-fill: #E2E8F0; -fx-font-size: 15px;"/>
+                        <Label text="Il y a 5 minutes"
+                               style="-fx-text-fill: #8BA0B8; -fx-font-size: 12px;"/>
                     </VBox>
                 </HBox>
-                <Separator/>
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="💬" style="-fx-font-size: 16px;"/>
+
+                <Separator style="-fx-background-color: #2E435E; -fx-border-style: none; -fx-padding: 5 0;"/>
+
+                <HBox spacing="15" alignment="CENTER_LEFT">
                     <VBox>
-                        <Label text="Nouveau message de Pierre L." style="-fx-text-fill: #e2e8f0; -fx-font-size: 13px;"/>
-                        <Label text="Il y a 12 minutes" style="-fx-text-fill: #a8b2d8; -fx-font-size: 11px;"/>
+                        <Label text="Nouveau message de Pierre L."
+                               style="-fx-text-fill: #E2E8F0; -fx-font-size: 15px;"/>
+                        <Label text="Il y a 12 minutes"
+                               style="-fx-text-fill: #8BA0B8; -fx-font-size: 12px;"/>
                     </VBox>
                 </HBox>
-                <Separator/>
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="👋" style="-fx-font-size: 16px;"/>
+
+                <Separator style="-fx-background-color: #2E435E; -fx-border-style: none; -fx-padding: 5 0;"/>
+
+                <HBox spacing="15" alignment="CENTER_LEFT">
                     <VBox>
-                        <Label text="Sophie M. a rejoint le quartier" style="-fx-text-fill: #e2e8f0; -fx-font-size: 13px;"/>
-                        <Label text="Il y a 1 heure" style="-fx-text-fill: #a8b2d8; -fx-font-size: 11px;"/>
+                        <Label text="Sophie M. a rejoint le quartier"
+                               style="-fx-text-fill: #E2E8F0; -fx-font-size: 15px;"/>
+                        <Label text="Il y a 1 heure"
+                               style="-fx-text-fill: #8BA0B8; -fx-font-size: 12px;"/>
                     </VBox>
                 </HBox>
+
             </VBox>
         </VBox>
     </center>
 
     <bottom>
-        <HBox style="-fx-background-color: #16213e; -fx-padding: 10 20; -fx-alignment: CENTER_RIGHT;">
-            <Label text="NeighborHub v1.0  —  Connectez votre quartier" style="-fx-text-fill: #4a5568; -fx-font-size: 11px;"/>
+        <HBox style="-fx-background-color: #1A2639; -fx-padding: 15 25; -fx-alignment: CENTER_RIGHT; -fx-border-color: #2E435E transparent transparent transparent; -fx-border-width: 1 0 0 0;">
+            <Label text="Neighborhood-Manager v1.0  —  Connectez votre quartier"
+                   style="-fx-text-fill: #5C738A; -fx-font-size: 12px;"/>
         </HBox>
     </bottom>
 
