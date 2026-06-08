@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox spacing="20" styleClass="content-area" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.neighborhood_manager.IncidentsController"
+      style="-fx-background-color: #1A2639; -fx-padding: 30;">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="Signalements &amp; Incidents Quartier" style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="Actualiser les Signalements" fx:id="btnRefresh" onAction="#refreshIncidents"
+                style="-fx-background-color: #0CA789; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;">
+            <graphic>
+                <FontIcon iconLiteral="fas-sync" iconSize="14" iconColor="white"/>
+            </graphic>
+        </Button>
+    </HBox>
+
+    <TableView fx:id="incidentsTable" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: #233348; -fx-border-color: #2E435E; -fx-background-radius: 8; -fx-border-radius: 8;">
+        <columns>
+            <TableColumn fx:id="colDescription" text="Description de l'incident" prefWidth="450" style="-fx-text-fill: white;"/>
+            <TableColumn fx:id="colStatus" text="Statut" prefWidth="150"/>
+            <TableColumn fx:id="colAction" text="Action" prefWidth="150"/>
+        </columns>
+    </TableView>
+</VBox>

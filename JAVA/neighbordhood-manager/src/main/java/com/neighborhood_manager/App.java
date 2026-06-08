@@ -19,11 +19,12 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-       // DatabaseConnection.startup();
+       DatabaseConnection.startup();
 
-        //stage.setTitle("TEST DE MISE A JOUR");
+        stage.setTitle("Petits secrets Entre Voisins");
 
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("primary"), 1024, 768);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }
@@ -36,6 +37,8 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
+
+
 
     public static void main(String[] args) {
         launch();

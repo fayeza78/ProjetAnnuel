@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" styleClass="content-area" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.neighborhood_manager.VoisinsController">
+    <padding><Insets top="20" right="40" bottom="20" left="40"/></padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="Gestion des Résidents" style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="Actualiser via Serveur" styleClass="icon-button-outline" onAction="#refreshFromApi"/>
+    </HBox>
+
+    <TableView fx:id="voisinsTable" VBox.vgrow="ALWAYS" styleClass="admin-table">
+        <columns>
+            <TableColumn fx:id="colNom" text="Nom Complet" prefWidth="200"/>
+            <TableColumn fx:id="colEmail" text="Email" prefWidth="250"/>
+            <TableColumn fx:id="colStatus" text="Statut" prefWidth="150"/>
+            <TableColumn fx:id="colAction" text="Actions" prefWidth="150"/>
+        </columns>
+    </TableView>
+</VBox>
