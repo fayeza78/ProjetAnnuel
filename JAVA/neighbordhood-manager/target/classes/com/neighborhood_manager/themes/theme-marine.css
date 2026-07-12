@@ -1,0 +1,13 @@
+/* Thème : Bleu Marine */
+.root {
+    nm-deep-bg:    #0D1B2E;
+    nm-card-bg:    #162640;
+    nm-border:     #1E3A5F;
+    nm-accent:     #4A90E2;
+    nm-primary:    #5DADE2;
+    nm-text:       white;
+    nm-text-muted: #7FAACC;
+    nm-footer-bg:  #080F1A;
+    nm-input-bg:   #162640;
+    nm-hover-bg:   #1E3A5F;
+}

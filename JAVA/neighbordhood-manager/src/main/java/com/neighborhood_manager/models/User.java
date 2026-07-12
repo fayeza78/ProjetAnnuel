@@ -1,21 +1,24 @@
 package com.neighborhood_manager.models;
 
 public class User {
-    private String id;
-    private String name;
+    private int id_user;
     private String email;
-    private String status; // "PENDING", "VALIDATED"
+    private String role;
+    private String adresse;
+    private String ville;
 
-    public User(String id, String name, String email, String status) {
-        this.id = id;
-        this.name = name;
+    public User(int id_user, String email, String role, String adresse, String ville) {
+        this.id_user = id_user;
         this.email = email;
-        this.status = status;
+        this.role = role;
+        this.adresse = adresse;
+        this.ville = ville;
     }
 
-    // Getters (obligatoires pour le TableView)
-    public String getName() { return name; }
+    // Getters indispensables pour le TableView JavaFX
+    public int getId_user() { return id_user; }
     public String getEmail() { return email; }
-    public String getStatus() { return status; }
-    public String getId() { return id; }
+    public String getRole() { return role; }
+    public String getAdresse() { return adresse; }
+    public String getVille() { return ville; }
 }

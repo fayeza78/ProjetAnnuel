@@ -1,17 +1,26 @@
-package com.neighborhood_manager.models;
+package com.neighborhood_manager.models; // Vérifie bien ton package
 
 public class Incident {
-    private String id;
-    private String description;
-    private String status; // "PENDING", "RESOLVED"
+    private int id_signalement;
+    private String motif;
+    private String statut;
 
-    public Incident(String id, String description, String status) {
-        this.id = id;
-        this.description = description;
-        this.status = status;
+    // Constructeur par défaut nécessaire pour certains parseurs
+    public Incident() {}
+
+    public Incident(int id_signalement, String motif, String statut) {
+        this.id_signalement = id_signalement;
+        this.motif = motif;
+        this.statut = statut;
     }
 
-    public String getId() { return id; }
-    public String getDescription() { return description; }
-    public String getStatus() { return status; }
+    // Getters et Setters indispensables pour le TableView de JavaFX
+    public int getId_signalement() { return id_signalement; }
+    public void setId_signalement(int id_signalement) { this.id_signalement = id_signalement; }
+
+    public String getMotif() { return motif; }
+    public void setMotif(String motif) { this.motif = motif; }
+
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
 }

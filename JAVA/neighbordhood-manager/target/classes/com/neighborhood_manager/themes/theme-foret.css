@@ -1,0 +1,13 @@
+/* Thème : Forêt */
+.root {
+    nm-deep-bg:    #0D1F12;
+    nm-card-bg:    #162A1C;
+    nm-border:     #2A4A30;
+    nm-accent:     #F1C40F;
+    nm-primary:    #27AE60;
+    nm-text:       white;
+    nm-text-muted: #7EC8A0;
+    nm-footer-bg:  #080F0A;
+    nm-input-bg:   #162A1C;
+    nm-hover-bg:   #2A4A30;
+}

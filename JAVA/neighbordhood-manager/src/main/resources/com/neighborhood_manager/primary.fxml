@@ -43,6 +43,10 @@
                 <Button text="Messages" fx:id="btnMessages" onAction="#goMessages" styleClass="nav-button">
                     <graphic><FontIcon iconLiteral="fas-envelope" iconSize="14" iconColor="#8BA0B8"/></graphic>
                 </Button>
+
+                <Button text="Plugins" fx:id="btnPlugins" onAction="#goPlugins" styleClass="nav-button">
+                    <graphic><FontIcon iconLiteral="fas-puzzle-piece" iconSize="14" iconColor="#8BA0B8"/></graphic>
+                </Button>
             </HBox>
 
             <Region style="-fx-min-width: 30;"/>
@@ -51,7 +55,7 @@
                 <Button fx:id="btnSettings" onAction="#goSettings" styleClass="icon-button-outline">
                     <graphic><FontIcon iconLiteral="fas-cog" iconSize="16" iconColor="#8BA0B8"/></graphic>
                 </Button>
-                <Button text="Profil Admin" fx:id="btnProfil" styleClass="icon-button-outline">
+                <Button text="Profil Admin" fx:id="btnProfil" onAction="#goProfile" styleClass="icon-button-outline">
                     <graphic><FontIcon iconLiteral="fas-user-shield" iconSize="16" iconColor="#8BA0B8"/></graphic>
                 </Button>
             </HBox>
@@ -68,23 +72,23 @@
 
             <HBox spacing="25" alignment="CENTER">
                 <VBox spacing="10" alignment="CENTER" styleClass="stat-card">
-                    <Label text="Voisins" styleClass="stat-card-title"/>
-                    <Label fx:id="lblNbVoisins" text="Chargement..." styleClass="stat-card-value"/>
+                    <Label text="Voisins" styleClass="stat-card-title" style="-fx-text-fill: white;"/>
+                    <Label fx:id="lblNbVoisins" text="Chargement..." styleClass="stat-card-value" />
                 </VBox>
 
                 <VBox spacing="10" alignment="CENTER" styleClass="stat-card-highlight">
-                    <Label text="Annonces" styleClass="stat-card-title-white"/>
-                    <Label fx:id="lblNbAnnonces" text="3 nouvelles" styleClass="stat-card-value-orange"/>
+                    <Label text="Annonces" styleClass="stat-card-title-white" style="-fx-text-fill: white;"/>
+                    <Label fx:id="lblNbAnnonces" text="En cours " styleClass="stat-card-value-orange"/>
                 </VBox>
 
                 <VBox spacing="10" alignment="CENTER" styleClass="stat-card">
-                    <Label text="Incidents" styleClass="stat-card-title"/>
+                    <Label text="Incidents" styleClass="stat-card-title" style="-fx-text-fill: white;"/>
                     <Label fx:id="lblNbIncidents" text="0 en cours" styleClass="stat-card-value"/>
                 </VBox>
 
                 <VBox spacing="10" alignment="CENTER" styleClass="stat-card">
-                    <Label text="Synchro" styleClass="stat-card-title"/>
-                    <Label fx:id="lblSyncStatus" text="Mode Offline" styleClass="stat-card-value-small"/>
+                    <Label text="Synchro" styleClass="stat-card-title" style="-fx-text-fill: white;"/>
+                    <Label fx:id="lblSyncStatus" text="Mode Offline" styleClass="stat-card-value"/>
                 </VBox>
             </HBox>
 
@@ -98,7 +102,7 @@
 
     <bottom>
         <HBox styleClass="footer-bar">
-            <Label text="Connecté en tant qu'Administrateur Quartier — Base Locale SQLite Active" styleClass="footer-text"/>
+            <Label text="Connecté en tant qu'Administrateur — Base Locale SQLite Active" styleClass="footer-text"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Label text="v1.0.0-stable" styleClass="footer-text"/>
         </HBox>

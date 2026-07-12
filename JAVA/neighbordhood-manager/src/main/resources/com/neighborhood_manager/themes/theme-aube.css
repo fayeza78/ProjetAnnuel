@@ -1,0 +1,17 @@
+/* Thème : Aube Claire */
+.root {
+    nm-deep-bg:    #F0F4F8;
+    nm-card-bg:    #FFFFFF;
+    nm-border:     #D1DCE8;
+    nm-accent:     #E67E22;
+    nm-primary:    #1ABC9C;
+    nm-text:       #2C3E50;
+    nm-text-muted: #6C7D8E;
+    nm-footer-bg:  #E4EAF0;
+    nm-input-bg:   #F8FAFC;
+    nm-hover-bg:   #EEF2F7;
+}
+.top-navbar { -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 8, 0, 0, 2); }
+.stat-card, .stat-card-highlight, .activity-panel {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 3);
+}

@@ -1,0 +1,9 @@
+/* Police : Compacte */
+.root { -fx-font-size: 11px; }
+.logo-text-primary, .logo-text-secondary { -fx-font-size: 17px; }
+.panel-header { -fx-font-size: 15px; }
+.stat-card, .stat-card-highlight { -fx-padding: 16; -fx-min-width: 155; }
+.content-area  { -fx-padding: 16; }
+.top-navbar    { -fx-padding: 10 18; }
+.nav-button    { -fx-padding: 5 12; }
+.nav-button-active { -fx-padding: 5 14; }

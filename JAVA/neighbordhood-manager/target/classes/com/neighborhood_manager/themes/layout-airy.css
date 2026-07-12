@@ -1,0 +1,6 @@
+/* Disposition : Aérée */
+.stat-card, .stat-card-highlight { -fx-padding: 42; -fx-min-width: 220; }
+.content-area   { -fx-padding: 45; }
+.top-navbar     { -fx-padding: 22 35; }
+.activity-panel { -fx-padding: 28; }
+.footer-bar     { -fx-padding: 14 30; }

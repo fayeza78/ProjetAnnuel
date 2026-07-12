@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.neighborhood_manager.SettingsController"
+            fitToWidth="true"
+            style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+
+    <VBox spacing="0">
+        <padding><Insets top="20" right="30" bottom="30" left="30"/></padding>
+
+        <!-- En-tête -->
+        <Label text="Personnalisation"
+               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: nm-primary;"/>
+        <Label text="Modifiez l'apparence de l'application en temps réel."
+               style="-fx-text-fill: nm-text-muted; -fx-font-size: 13px; -fx-padding: 4 0 20 0;"/>
+
+        <!-- Section Thème -->
+        <VBox spacing="14"
+              style="-fx-background-color: nm-card-bg; -fx-background-radius: 14; -fx-padding: 22; -fx-border-color: nm-border; -fx-border-radius: 14; -fx-border-width: 1;">
+            <Label text="Thème" styleClass="settings-section-title"/>
+            <Label text="Choisissez la palette de couleurs de l'interface."
+                   style="-fx-text-fill: nm-text-muted; -fx-font-size: 12px;"/>
+            <HBox fx:id="themeCardsContainer" spacing="14" alignment="CENTER_LEFT"/>
+        </VBox>
+
+        <Region minHeight="16"/>
+
+        <!-- Section Police -->
+        <VBox spacing="14"
+              style="-fx-background-color: nm-card-bg; -fx-background-radius: 14; -fx-padding: 22; -fx-border-color: nm-border; -fx-border-radius: 14; -fx-border-width: 1;">
+            <Label text="Taille de police" styleClass="settings-section-title"/>
+            <Label text="Ajustez la densité du texte selon vos préférences de lisibilité."
+                   style="-fx-text-fill: nm-text-muted; -fx-font-size: 12px;"/>
+            <HBox fx:id="fontButtonsContainer" spacing="12" alignment="CENTER_LEFT"/>
+        </VBox>
+
+        <Region minHeight="16"/>
+
+        <!-- Section Disposition -->
+        <VBox spacing="14"
+              style="-fx-background-color: nm-card-bg; -fx-background-radius: 14; -fx-padding: 22; -fx-border-color: nm-border; -fx-border-radius: 14; -fx-border-width: 1;">
+            <Label text="Disposition" styleClass="settings-section-title"/>
+            <Label text="Contrôlez l'espacement et la densité des éléments à l'écran."
+                   style="-fx-text-fill: nm-text-muted; -fx-font-size: 12px;"/>
+            <HBox fx:id="layoutButtonsContainer" spacing="12" alignment="CENTER_LEFT"/>
+        </VBox>
+
+        <Region minHeight="24"/>
+
+        <!-- Pied de page : Réinitialiser + statut -->
+        <HBox alignment="CENTER_RIGHT" spacing="20">
+            <Label fx:id="statusLabel" styleClass="settings-status" text="" HBox.hgrow="ALWAYS"/>
+            <Button text="Réinitialiser les paramètres" onAction="#resetDefaults"
+                    style="-fx-background-color: nm-card-bg; -fx-text-fill: nm-text-muted; -fx-border-color: nm-border; -fx-border-radius: 8; -fx-border-width: 1; -fx-background-radius: 8; -fx-padding: 9 22; -fx-cursor: hand;"/>
+        </HBox>
+
+    </VBox>
+</ScrollPane>

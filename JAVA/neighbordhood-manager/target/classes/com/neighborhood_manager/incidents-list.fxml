@@ -23,7 +23,7 @@
     <TableView fx:id="incidentsTable" VBox.vgrow="ALWAYS"
                style="-fx-background-color: #233348; -fx-border-color: #2E435E; -fx-background-radius: 8; -fx-border-radius: 8;">
         <columns>
-            <TableColumn fx:id="colDescription" text="Description de l'incident" prefWidth="450" style="-fx-text-fill: white;"/>
+            <TableColumn fx:id="colDescription" text="Description de l'incident" prefWidth="450" style="-fx-text-fill: black;"/>
             <TableColumn fx:id="colStatus" text="Statut" prefWidth="150"/>
             <TableColumn fx:id="colAction" text="Action" prefWidth="150"/>
         </columns>

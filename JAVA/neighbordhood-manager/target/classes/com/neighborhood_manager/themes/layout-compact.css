@@ -1,0 +1,6 @@
+/* Disposition : Compacte */
+.stat-card, .stat-card-highlight { -fx-padding: 14; -fx-min-width: 155; }
+.content-area   { -fx-padding: 15; }
+.top-navbar     { -fx-padding: 8 20; }
+.activity-panel { -fx-padding: 12; }
+.footer-bar     { -fx-padding: 7 20; }

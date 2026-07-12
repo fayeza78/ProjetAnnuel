@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.geometry.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.neighborhood_manager.LoginController"
+           styleClass="main-container">
+
+    <VBox alignment="CENTER">
+        <VBox fx:id="loginCard" alignment="CENTER" spacing="16" maxWidth="400" styleClass="login-card">
+
+            <!-- Icône shield -->
+            <FontIcon iconLiteral="fas-user-shield" iconSize="40" iconColor="#0CA789"/>
+
+            <!-- Logo -->
+            <VBox alignment="CENTER" spacing="-6">
+                <HBox alignment="CENTER" spacing="6">
+                    <Label text="petits" styleClass="logo-text-primary"/>
+                    <Label text="secrets" styleClass="logo-text-primary"/>
+                </HBox>
+                <Label text="entrevoisins" styleClass="logo-text-secondary"/>
+            </VBox>
+
+            <Separator styleClass="panel-separator" maxWidth="300"/>
+
+            <VBox alignment="CENTER" spacing="4">
+                <Label text="Connexion Administrateur" styleClass="login-title"/>
+                <Label text="Réservé aux comptes avec rôle admin" styleClass="login-subtitle"/>
+            </VBox>
+
+            <!-- Email -->
+            <VBox spacing="6" maxWidth="320" fillWidth="true">
+                <Label text="Adresse email" styleClass="login-field-label"/>
+                <TextField fx:id="emailField" promptText="admin@example.com"
+                           styleClass="text-field" onAction="#handleLogin" prefWidth="320"/>
+            </VBox>
+
+            <!-- Mot de passe -->
+            <VBox spacing="6" maxWidth="320" fillWidth="true">
+                <Label text="Mot de passe" styleClass="login-field-label"/>
+                <PasswordField fx:id="passwordField" promptText="••••••••"
+                               styleClass="text-field" onAction="#handleLogin" prefWidth="320"/>
+            </VBox>
+
+            <!-- Erreur -->
+            <Label fx:id="errorLabel" text="" styleClass="login-error"
+                   visible="false" wrapText="true" maxWidth="320"/>
+
+            <!-- Bouton -->
+            <Button fx:id="loginButton" text="Se connecter" onAction="#handleLogin"
+                    styleClass="button-primary" prefWidth="320" prefHeight="42">
+                <graphic><FontIcon iconLiteral="fas-sign-in-alt" iconSize="14" iconColor="white"/></graphic>
+            </Button>
+
+            <!-- Séparateur SSO -->
+            <HBox alignment="CENTER" spacing="10" maxWidth="320">
+                <Separator HBox.hgrow="ALWAYS"/>
+                <Label text="OU" styleClass="login-subtitle"/>
+                <Separator HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Section ticket SSO -->
+            <VBox alignment="CENTER" spacing="4">
+                <Label text="Connexion via ticket SSO" styleClass="login-title" style="-fx-font-size: 14px;"/>
+                <Label text="Générez un ticket sur votre espace web, puis collez-le ci-dessous."
+                       styleClass="login-subtitle" wrapText="true" maxWidth="300" textAlignment="CENTER"/>
+            </VBox>
+
+            <VBox spacing="6" maxWidth="320" fillWidth="true">
+                <Label text="Ticket SSO" styleClass="login-field-label"/>
+                <TextField fx:id="ssoTicketField" promptText="Collez votre ticket ici..."
+                           styleClass="text-field" onAction="#handleSSOLogin" prefWidth="320"/>
+            </VBox>
+
+            <Label fx:id="ssoErrorLabel" text="" styleClass="login-error"
+                   visible="false" wrapText="true" maxWidth="320"/>
+
+            <Button fx:id="ssoLoginButton" text="Se connecter via ticket" onAction="#handleSSOLogin"
+                    styleClass="button-sso" prefWidth="320" prefHeight="42">
+                <graphic><FontIcon iconLiteral="fas-ticket-alt" iconSize="14" iconColor="white"/></graphic>
+            </Button>
+
+            <!-- Accès hors ligne -->
+            <Button fx:id="offlineButton" text="Continuer en mode hors ligne (SQLite)"
+                    onAction="#handleOfflineMode" styleClass="button-offline" prefWidth="320">
+                <graphic><FontIcon iconLiteral="fas-database" iconSize="12" iconColor="#8BA0B8"/></graphic>
+            </Button>
+
+            <Label text="v1.0.0 — Accès sécurisé" styleClass="login-footer-note"/>
+
+        </VBox>
+    </VBox>
+
+</StackPane>

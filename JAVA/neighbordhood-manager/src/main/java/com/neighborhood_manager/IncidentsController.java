@@ -21,38 +21,50 @@ public class IncidentsController {
     @FXML private TableColumn<Incident, Void> colAction;
     @FXML private Button btnRefresh;
 
+    private final ObservableList<Incident> incidentList = FXCollections.observableArrayList();
+
     @FXML
     public void initialize() {
-        colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        // Liaison avec les Getters d'origine de ton modèle Incident (getDescription et getStatus)
+        colDescription.setCellValueFactory(new PropertyValueFactory<>("motif"));
+        colStatus.setCellValueFactory(new PropertyValueFactory<>("statut"));
+
+        incidentsTable.setItems(incidentList);
 
         ajouterBoutonAction();
-        refreshIncidents(); // Chargement initial au clic sur le menu
+        refreshIncidents(); // Chargement des données au clic sur le menu
     }
 
     @FXML
     private void refreshIncidents() {
-        btnRefresh.setDisable(true);
-        btnRefresh.setText("Chargement...");
+        if (btnRefresh != null) {
+            btnRefresh.setDisable(true);
+            btnRefresh.setText("Chargement...");
+        }
 
         ApiService.fetchSignalements()
                 .thenAccept(jsonResponse -> {
-                    // LINE DE VERIFICATION : On affiche ce que le serveur renvoie réellement
                     System.out.println("====== REPONSE DU SERVEUR NODE.JS ======");
                     System.out.println(jsonResponse);
                     System.out.println("========================================");
 
-                    ObservableList<Incident> list = parseIncidentsJson(jsonResponse);
+                    ObservableList<Incident> tempSetupList = parseIncidentsJson(jsonResponse);
+
                     Platform.runLater(() -> {
-                        incidentsTable.setItems(list);
-                        btnRefresh.setDisable(false);
-                        btnRefresh.setText("Actualiser les Signalements");
+                        incidentList.clear();
+                        incidentList.addAll(tempSetupList);
+                        if (btnRefresh != null) {
+                            btnRefresh.setDisable(false);
+                            btnRefresh.setText("Actualiser les Signalements");
+                        }
                     });
                 })
                 .exceptionally(ex -> {
                     Platform.runLater(() -> {
-                        btnRefresh.setDisable(false);
-                        btnRefresh.setText("Actualiser les Signalements");
+                        if (btnRefresh != null) {
+                            btnRefresh.setDisable(false);
+                            btnRefresh.setText("Actualiser les Signalements");
+                        }
                         Alert alert = new Alert(Alert.AlertType.WARNING, "Impossible de joindre le serveur pour les incidents.");
                         alert.show();
                     });
@@ -61,23 +73,61 @@ public class IncidentsController {
     }
 
     /**
-     * Parseur de JSON manuel ultra-robuste adapté à ton Swagger
+     * Parseur par blocs isolé : découpe le JSON reçu pour extraire proprement
+     * id_signalement, motif et statut sans être bloqué par l'objet imbriqué "signaleur"
      */
     private ObservableList<Incident> parseIncidentsJson(String json) {
         ObservableList<Incident> list = FXCollections.observableArrayList();
-        // Regex pour attraper l'id, la description et le statut dans le JSON du serveur
-        Pattern pattern = Pattern.compile("\\{\\s*\"_id\"\\s*:\\s*\"([^\"]+)\"\\s*,\\s*\"description\"\\s*:\\s*\"([^\"]+)\"\\s*,\\s*\"status\"\\s*:\\s*\"([^\"]+)\"");
-        Matcher matcher = pattern.matcher(json);
 
-        while (matcher.find()) {
-            String statusValue = matcher.group(3).equals("RESOLVED") ? "Résolu" : "En cours";
-            list.add(new Incident(matcher.group(1), matcher.group(2), statusValue));
+        // On découpe la chaîne brute reçue par bloc d'incident
+        String[] blocks = json.split("\\{\\s*\"id_signalement\"");
+
+        // Le premier index [0] contient le crochet ouvrant "[", on démarre à 1
+        for (int i = 1; i < blocks.length; i++) {
+            String block = blocks[i];
+
+            // 1. Extraction de l'ID (Juste après le séparateur de split)
+            String id = "";
+            Pattern pId = Pattern.compile("^\\s*:\\s*(\\d+)");
+            Matcher mId = pId.matcher(block);
+            if (mId.find()) {
+                id = mId.group(1);
+            }
+
+            // 2. Extraction du Motif (qui va alimenter le champ description du Java)
+            String description = "Aucun motif spécifié";
+            Pattern pMotif = Pattern.compile("\"motif\"\\s*:\\s*\"([^\"]+)\"");
+            Matcher mMotif = pMotif.matcher(block);
+            if (mMotif.find()) {
+                description = mMotif.group(1);
+            }
+
+            // 3. Extraction du Statut de la BDD ('ouvert' -> 'En cours', sinon 'Résolu')
+            String statusAffiche = "En cours";
+            Pattern pStatut = Pattern.compile("\"statut\"\\s*:\\s*\"([^\"]+)\"");
+            Matcher mStatut = pStatut.matcher(block);
+            if (mStatut.find()) {
+                String statutBrut = mStatut.group(1);
+                statusAffiche = statutBrut.equals("ouvert") ? "En cours" : "Résolu";
+            }
+
+            // Si l'ID a bien été trouvé, on instancie l'incident dans ton modèle d'origine
+            if (!id.isEmpty()) {
+                try {
+                    int idInt = Integer.parseInt(id);
+                    list.add(new Incident(idInt, description, statusAffiche));
+                } catch (NumberFormatException e) {
+                    System.err.println("Erreur de conversion de l'ID : " + id);
+                }
+            }
         }
+
+        System.out.println("[Parseur] Nombre d'incidents décodés avec succès : " + list.size());
         return list;
     }
 
     /**
-     * Génère dynamiquement un bouton "Résoudre" sur chaque ligne du tableau
+     * Génère dynamiquement le bouton "Traiter" sur chaque ligne du tableau
      */
     private void ajouterBoutonAction() {
         Callback<TableColumn<Incident, Void>, TableCell<Incident, Void>> cellFactory = new Callback<>() {
@@ -92,13 +142,15 @@ public class IncidentsController {
                             btn.setDisable(true);
 
                             // Appel à l'API Swagger PUT /signalements/{id}/traiter
-                            ApiService.traiterSignalement(data.getId())
+                            ApiService.traiterSignalement(String.valueOf(data.getId_signalement()))
                                     .thenAccept(success -> {
                                         Platform.runLater(() -> {
                                             if (success) {
                                                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "L'incident a été marqué comme Résolu !");
                                                 alert.show();
-                                                refreshIncidents(); // Rafraîchir le tableau
+                                                refreshIncidents(); // Actualiser le tableau à jour
+                                            } else {
+                                                btn.setDisable(false);
                                             }
                                         });
                                     });
@@ -112,8 +164,8 @@ public class IncidentsController {
                             setGraphic(null);
                         } else {
                             Incident incident = getTableView().getItems().get(getIndex());
-                            // Si déjà résolu, on cache le bouton
-                            if ("Résolu".equals(incident.getStatus())) {
+                            // Si le statut est à 'Résolu', on cache le bouton de traitement
+                            if ("Résolu".equals(incident.getStatut())) {
                                 setGraphic(null);
                             } else {
                                 setGraphic(btn);

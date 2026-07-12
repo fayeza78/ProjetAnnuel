@@ -8,17 +8,18 @@
     <padding><Insets top="20" right="40" bottom="20" left="40"/></padding>
 
     <HBox alignment="CENTER_LEFT" spacing="20">
-        <Label text="Gestion des Résidents" style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Label text="Gestion des Résidents" style="-fx-font-size: 24px; -fx-text-fill: black; -fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS" />
-        <Button text="Actualiser via Serveur" styleClass="icon-button-outline" onAction="#refreshFromApi"/>
+        <Button text="Actualiser via Serveur" styleClass="icon-button-outline" onAction="#loadVoisins"/>
     </HBox>
 
     <TableView fx:id="voisinsTable" VBox.vgrow="ALWAYS" styleClass="admin-table">
         <columns>
-            <TableColumn fx:id="colNom" text="Nom Complet" prefWidth="200"/>
+
             <TableColumn fx:id="colEmail" text="Email" prefWidth="250"/>
             <TableColumn fx:id="colStatus" text="Statut" prefWidth="150"/>
             <TableColumn fx:id="colAction" text="Actions" prefWidth="150"/>
+            <TableColumn fx:id="colNom" text="Adresse" prefWidth="200"/>
         </columns>
     </TableView>
 </VBox>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.neighborhood_manager.PluginsController"
+      spacing="0" alignment="TOP_LEFT">
+
+    <padding><Insets top="10" right="20" bottom="20" left="20"/></padding>
+
+    <Label text="Plugins disponibles"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0CA789; -fx-padding: 0 0 5 0;"/>
+
+    <Label text="Étendez les fonctionnalités de l'application en un clic."
+           style="-fx-text-fill: #8BA0B8; -fx-font-size: 13px; -fx-padding: 0 0 18 0;"/>
+
+    <Separator style="-fx-background-color: #2E435E;"/>
+
+    <VBox fx:id="pluginListContainer" spacing="12" style="-fx-padding: 18 0 0 0;"/>
+
+</VBox>
