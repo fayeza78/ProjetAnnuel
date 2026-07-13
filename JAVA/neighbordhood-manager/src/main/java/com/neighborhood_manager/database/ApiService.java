@@ -307,6 +307,43 @@ public class ApiService {
     }
 
     /**
+     * GET /incidents - Liste tous les incidents
+     */
+    public static CompletableFuture<String> fetchIncidents() {
+        String token = SessionManager.getInstance().getAccessToken();
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/incidents"))
+                .header("Accept", "application/json");
+        if (token != null) builder.header("Authorization", "Bearer " + token);
+        return httpClient.sendAsync(builder.GET().build(), HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) return response.body();
+                    throw new RuntimeException("Erreur /incidents : " + response.statusCode());
+                });
+    }
+
+    /**
+     * PUT /incidents/{id}/statut - Met à jour le statut d'un incident
+     */
+    public static CompletableFuture<Boolean> updateIncidentStatut(int id) {
+        String token = SessionManager.getInstance().getAccessToken();
+        String jsonBody = "{\"statut\": \"traite\"}";
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/incidents/" + id + "/statut"))
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json");
+        if (token != null) builder.header("Authorization", "Bearer " + token);
+        return httpClient.sendAsync(
+                builder.PUT(HttpRequest.BodyPublishers.ofString(jsonBody)).build(),
+                HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) return true;
+                    System.err.println("Erreur traitement incident : " + response.statusCode() + " - " + response.body());
+                    return false;
+                });
+    }
+
+    /**
      * GET /presence - Récupère uniquement les utilisateurs actuellement en ligne
      */
     public static CompletableFuture<String> fetchPresenceUsers() {

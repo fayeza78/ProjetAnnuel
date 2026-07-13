@@ -165,3 +165,111 @@
 .button-sso:hover   { -fx-opacity: 0.85; }
 .button-offline         { -fx-background-color: transparent; -fx-text-fill: nm-text-muted; -fx-font-size: 11px; -fx-border-color: nm-border; -fx-border-radius: 5; -fx-border-width: 1; -fx-padding: 7 14; -fx-cursor: hand; }
 .button-offline:hover   { -fx-background-color: nm-hover-bg; -fx-text-fill: nm-text; }
+
+/* ===== DASHBOARD ===== */
+.dashboard-title    { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: nm-text; }
+.dashboard-subtitle { -fx-font-size: 12px; -fx-text-fill: nm-text-muted; }
+
+/* Libellés des cartes */
+.stat-card-label { -fx-text-fill: nm-text-muted; -fx-font-size: 10px; -fx-font-weight: bold; }
+.stat-card-sub   { -fx-text-fill: nm-text-muted; -fx-font-size: 11px; }
+
+/* Grands chiffres */
+.stat-value-big       { -fx-text-fill: nm-text;    -fx-font-size: 34px; -fx-font-weight: bold; }
+.stat-value-big-orange{ -fx-text-fill: nm-accent;  -fx-font-size: 34px; -fx-font-weight: bold; }
+.stat-value-big-green { -fx-text-fill: nm-primary; -fx-font-size: 34px; -fx-font-weight: bold; }
+
+/* Badges de statut de connexion */
+.sync-badge-online  {
+    -fx-background-color: nm-primary;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 14;
+    -fx-background-radius: 20;
+}
+.sync-badge-offline {
+    -fx-background-color: nm-accent;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 14;
+    -fx-background-radius: 20;
+}
+
+/* Lignes de signalements récents */
+.incident-row {
+    -fx-background-color: nm-deep-bg;
+    -fx-background-radius: 8;
+    -fx-border-color: nm-border;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+.incident-row:hover { -fx-background-color: nm-hover-bg; }
+.incident-row-motif { -fx-text-fill: nm-text; -fx-font-size: 13px; }
+
+/* Badges statut incident (outlined) */
+.badge-open {
+    -fx-background-color: nm-card-bg;
+    -fx-text-fill: nm-accent;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 9;
+    -fx-background-radius: 12;
+    -fx-border-color: nm-accent;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+}
+.badge-resolved {
+    -fx-background-color: nm-card-bg;
+    -fx-text-fill: nm-primary;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 9;
+    -fx-background-radius: 12;
+    -fx-border-color: nm-primary;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+}
+
+/* Panneau d'informations système */
+.info-label-value { -fx-text-fill: nm-text; -fx-font-size: 12px; }
+
+/* Bouton lien "Voir tout →" */
+.link-button       { -fx-background-color: transparent; -fx-text-fill: nm-accent; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 0; }
+.link-button:hover { -fx-text-fill: white; }
+
+/* ===== GRAPHIQUES JAVAFX (thème sombre) ===== */
+.dark-chart                           { -fx-background-color: transparent; }
+.dark-chart .chart-content            { -fx-background-color: transparent; }
+.dark-chart .chart-plot-background    { -fx-background-color: nm-deep-bg; }
+.dark-chart .chart-title              { -fx-text-fill: nm-text; -fx-font-size: 12px; }
+.dark-chart .chart-legend             { -fx-background-color: transparent; -fx-text-fill: nm-text-muted; }
+.dark-chart .chart-legend-item        { -fx-text-fill: nm-text-muted; }
+.dark-chart .axis                     { -fx-tick-label-fill: nm-text-muted; }
+.dark-chart .axis-label               { -fx-text-fill: nm-text-muted; -fx-font-size: 11px; }
+.dark-chart .axis-tick-mark           { -fx-stroke: nm-border; }
+.dark-chart .axis-minor-tick-mark     { -fx-stroke: nm-border; }
+.dark-chart .chart-vertical-grid-lines   { -fx-stroke: nm-border; -fx-stroke-dash-array: 4 4; }
+.dark-chart .chart-horizontal-grid-lines { -fx-stroke: nm-border; -fx-stroke-dash-array: 4 4; }
+.dark-chart .chart-alternative-row-fill { -fx-fill: transparent; -fx-stroke: transparent; }
+.dark-chart .chart-alternative-column-fill { -fx-fill: transparent; -fx-stroke: transparent; }
+
+/* PieChart */
+.dark-chart .chart-pie-label      { -fx-fill: nm-text-muted; -fx-font-size: 11px; }
+.dark-chart .chart-pie-label-line { -fx-stroke: nm-border; }
+.dark-chart .chart-pie { -fx-border-color: nm-deep-bg; -fx-border-width: 2; }
+
+/* BarChart */
+.dark-chart .default-color0.chart-bar { -fx-bar-fill: nm-accent;  }
+.dark-chart .default-color1.chart-bar { -fx-bar-fill: nm-primary; }
+.dark-chart .default-color2.chart-bar { -fx-bar-fill: #3498DB; }
+.dark-chart .default-color3.chart-bar { -fx-bar-fill: #9B59B6; }
+.dark-chart .default-color4.chart-bar { -fx-bar-fill: #E74C3C; }
+.dark-chart .chart-bar:hover { -fx-opacity: 0.8; }
+
+/* LineChart */
+.dark-chart .default-color0.chart-series-line { -fx-stroke: #F29C38; -fx-stroke-width: 2.5; }
+.dark-chart .default-color1.chart-series-line { -fx-stroke: #0CA789; -fx-stroke-width: 2.5; }
+.dark-chart .default-color0.chart-line-symbol { -fx-background-color: #F29C38, white; -fx-background-insets: 0, 2; -fx-background-radius: 5; -fx-padding: 5; }
+.dark-chart .default-color1.chart-line-symbol { -fx-background-color: #0CA789, white; -fx-background-insets: 0, 2; -fx-background-radius: 5; -fx-padding: 5; }

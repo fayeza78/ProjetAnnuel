@@ -11,6 +11,6 @@ module com.neighborhood_manager {
     requires java.prefs;
 
     opens com.neighborhood_manager to javafx.fxml;
-    opens com.neighborhood_manager.models to javafx.base;
+    opens com.neighborhood_manager.models to javafx.base, javafx.fxml;
     exports com.neighborhood_manager;
 }

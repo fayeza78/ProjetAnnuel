@@ -1,7 +1,10 @@
 package com.neighborhood_manager;
 
 import com.neighborhood_manager.database.ApiService;
+import com.neighborhood_manager.database.DatabaseConnection;
 import com.neighborhood_manager.models.User;
+
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,15 +51,26 @@ public class VoisinsController {
 
                     ObservableList<User> tempSetupList = parseVoisinsJson(jsonResponse);
 
+                    // Mise en cache des données fraîches pour un usage offline ultérieur
+                    DatabaseConnection.cacheUsers(tempSetupList);
+
                     Platform.runLater(() -> {
                         voisinList.clear();
                         voisinList.addAll(tempSetupList);
                     });
                 })
                 .exceptionally(ex -> {
+                    // Serveur injoignable : repli sur le cache SQLite
+                    System.out.println("[Voisins] API injoignable, lecture du cache SQLite...");
+                    List<User> cached = DatabaseConnection.loadCachedUsers();
                     Platform.runLater(() -> {
-                        Alert alert = new Alert(Alert.AlertType.WARNING, "Impossible de charger la liste des voisins.");
-                        alert.show();
+                        voisinList.clear();
+                        voisinList.addAll(cached);
+                        if (cached.isEmpty()) {
+                            Alert alert = new Alert(Alert.AlertType.WARNING,
+                                    "Impossible de charger la liste des voisins (aucune donnée en cache).");
+                            alert.show();
+                        }
                     });
                     return null;
                 });

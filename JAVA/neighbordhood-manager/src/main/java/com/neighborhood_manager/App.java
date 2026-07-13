@@ -22,6 +22,7 @@ public class App extends Application {
         stage.setTitle("Petits secrets Entre Voisins");
         scene = new Scene(loadFXML("login"), 1024, 768);
 
+
         // Applique le thème sauvegardé (ou Nuit par défaut)
         ThemeManager.getInstance().applyTo(scene);
 

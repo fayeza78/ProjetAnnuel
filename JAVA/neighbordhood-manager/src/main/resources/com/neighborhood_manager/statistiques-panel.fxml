@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox spacing="20" styleClass="content-area" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.neighborhood_manager.StatistiquesController"
+      style="-fx-background-color: #1A2639; -fx-padding: 30;">
+
+    <!-- En-tête -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <VBox spacing="4">
+            <Label text="Statistiques du quartier"
+                   style="-fx-font-size: 22px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Label fx:id="lblDataSource" text="Chargement..."
+                   style="-fx-text-fill: #8BA0B8; -fx-font-size: 11px;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnRefresh" onAction="#refreshStats" text="Actualiser"
+                style="-fx-background-color: #0CA789; -fx-text-fill: white; -fx-font-weight: bold;
+                       -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;">
+            <graphic><FontIcon iconLiteral="fas-sync" iconSize="14" iconColor="white"/></graphic>
+        </Button>
+    </HBox>
+
+    <!-- 4 cartes de synthèse -->
+    <HBox spacing="16">
+        <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+            <Label text="VOISINS INSCRITS" styleClass="stat-card-label"/>
+            <Label fx:id="lblTotalVoisins" text="—" styleClass="stat-value-big"/>
+        </VBox>
+        <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+            <Label text="EN LIGNE" styleClass="stat-card-label"/>
+            <Label fx:id="lblEnLigne" text="—" styleClass="stat-value-big"/>
+        </VBox>
+        <VBox spacing="6" styleClass="stat-card-highlight" HBox.hgrow="ALWAYS">
+            <Label text="INCIDENTS OUVERTS" styleClass="stat-card-label"/>
+            <Label fx:id="lblIncidentsOuverts" text="—" styleClass="stat-value-big-orange"/>
+        </VBox>
+        <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+            <Label text="TAUX DE RÉSOLUTION" styleClass="stat-card-label"/>
+            <Label fx:id="lblTauxResolution" text="—" styleClass="stat-value-big-green"/>
+        </VBox>
+    </HBox>
+
+    <!-- Ligne 1 : PieChart + BarChart -->
+    <HBox spacing="16">
+        <!-- PieChart : répartition incidents -->
+        <VBox spacing="8" styleClass="activity-panel" HBox.hgrow="ALWAYS">
+            <Label text="Répartition des incidents" styleClass="panel-header"/>
+            <Separator styleClass="panel-separator"/>
+            <PieChart fx:id="pieIncidents"
+                      prefHeight="230"
+                      animated="false"
+                      legendSide="BOTTOM"
+                      labelsVisible="true"
+                      styleClass="dark-chart"/>
+        </VBox>
+
+        <!-- BarChart : voisins par rôle -->
+        <VBox spacing="8" styleClass="activity-panel" HBox.hgrow="ALWAYS">
+            <Label text="Voisins par rôle" styleClass="panel-header"/>
+            <Separator styleClass="panel-separator"/>
+            <BarChart fx:id="barRoles"
+                      prefHeight="230"
+                      animated="false"
+                      legendVisible="false"
+                      styleClass="dark-chart">
+                <xAxis><CategoryAxis/></xAxis>
+                <yAxis><NumberAxis autoRanging="true"/></yAxis>
+            </BarChart>
+        </VBox>
+    </HBox>
+
+    <!-- Ligne 2 : LineChart pleine largeur -->
+    <VBox spacing="8" styleClass="activity-panel">
+        <Label text="Tendance de résolution par lots d'incidents" styleClass="panel-header"/>
+        <Separator styleClass="panel-separator"/>
+        <LineChart fx:id="lineChart"
+                   prefHeight="210"
+                   animated="false"
+                   createSymbols="true"
+                   styleClass="dark-chart">
+            <xAxis><CategoryAxis label="Lots d'incidents"/></xAxis>
+            <yAxis><NumberAxis autoRanging="true" label="Nombre"/></yAxis>
+        </LineChart>
+    </VBox>
+
+</VBox>
