@@ -154,7 +154,14 @@ public class LoginController {
             App.setRoot("primary");
         } catch (IOException e) {
             setLoading(false);
-            showError("Erreur lors du chargement de l'application.");
+            showError("Erreur chargement : " + e.getMessage());
+            System.err.println("[LOGIN] IOException : " + e.getMessage());
+            e.printStackTrace();
+        } catch (RuntimeException e) {
+            setLoading(false);
+            showError("Erreur inattendue : " + e.getMessage());
+            System.err.println("[LOGIN] RuntimeException : " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

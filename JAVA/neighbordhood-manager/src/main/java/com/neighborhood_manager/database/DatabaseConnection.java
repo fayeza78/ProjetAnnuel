@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.neighborhood_manager.models.Incident;
 import com.neighborhood_manager.models.IncidentEntry;
+import com.neighborhood_manager.models.PendingReport;
 import com.neighborhood_manager.models.User;
 
 
@@ -64,10 +65,20 @@ public class DatabaseConnection {
                         "email TEXT," +
                         "created_at TEXT" +
                         ");";
+                // table pour les rapports créés hors ligne, en attente de sync
+                String sqlPending = "CREATE TABLE IF NOT EXISTS pending_reports (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "type TEXT NOT NULL," +
+                        "description TEXT NOT NULL," +
+                        "cible_type TEXT," +
+                        "cible_id TEXT," +
+                        "created_at TEXT" +
+                        ");";
                 stmt.execute(sqlContrats);
                 stmt.execute(sqlUsers);
                 stmt.execute(sqlIncidents);
                 stmt.execute(sqlIncidentsApi);
+                stmt.execute(sqlPending);
 
                 // Migration douce : ajoute les colonnes manquantes si la base existe déjà
                 addColumnIfMissing(stmt, "cached_users", "role", "TEXT");
@@ -208,6 +219,75 @@ public class DatabaseConnection {
             System.out.println("[Cache SQLite] " + incidents.size() + " incidents mis en cache.");
         } catch (SQLException e) {
             System.err.println("[Cache SQLite] Erreur mise en cache incidents : " + e.getMessage());
+        }
+    }
+
+    /* ===================== Rapports en attente de synchronisation ===================== */
+
+    /** Enregistre un rapport créé hors ligne (signalement ou incident). */
+    public static void savePendingReport(String type, String description, String cibleType, String cibleId) {
+        String sql = "INSERT INTO pending_reports (type, description, cible_type, cible_id, created_at) VALUES (?, ?, ?, ?, datetime('now'))";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, type);
+            ps.setString(2, description);
+            ps.setString(3, cibleType);
+            ps.setString(4, cibleId);
+            ps.executeUpdate();
+            // Supprime les anciens rapports mal formés (sans cible_type/cible_id)
+            System.out.println("[Offline] Rapport sauvegardé : " + type + " — " + description);
+        } catch (SQLException e) {
+            System.err.println("[Offline] Erreur sauvegarde rapport : " + e.getMessage());
+        }
+    }
+
+    /** Retourne tous les rapports non encore synchronisés. */
+    public static List<PendingReport> loadPendingReports() {
+        List<PendingReport> list = new ArrayList<>();
+        // Migration douce : ajoute les colonnes si elles n'existent pas encore
+        try (Connection conn = getConnection(); Statement mig = conn.createStatement()) {
+            addColumnIfMissing(mig, "pending_reports", "cible_type", "TEXT");
+            addColumnIfMissing(mig, "pending_reports", "cible_id",   "TEXT");
+        } catch (SQLException ignored) {}
+
+        String sql = "SELECT id, type, description, cible_type, cible_id, created_at FROM pending_reports";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(new PendingReport(
+                        rs.getInt("id"),
+                        rs.getString("type"),
+                        rs.getString("description"),
+                        rs.getString("cible_type"),
+                        rs.getString("cible_id"),
+                        rs.getString("created_at")));
+            }
+        } catch (SQLException e) {
+            System.err.println("[Offline] Erreur lecture rapports en attente : " + e.getMessage());
+        }
+        return list;
+    }
+
+    /** Compte les rapports en attente (pour le badge UI). */
+    public static int countPendingReports() {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM pending_reports")) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            return 0;
+        }
+    }
+
+    /** Supprime un rapport après synchronisation réussie. */
+    public static void deletePendingReport(int id) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM pending_reports WHERE id = ?")) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[Offline] Erreur suppression rapport : " + e.getMessage());
         }
     }
 

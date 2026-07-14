@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox spacing="20" styleClass="content-area" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="16" styleClass="content-area" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.neighborhood_manager.IncidentsController"
       style="-fx-background-color: #1A2639; -fx-padding: 30;">
 
@@ -24,17 +24,39 @@
         </Button>
     </HBox>
 
+    <!-- Barre de synchronisation (masquée si aucun rapport en attente) -->
+    <HBox fx:id="pendingBar" visible="false" managed="false" alignment="CENTER_LEFT" spacing="12"
+          style="-fx-background-color: rgba(242,156,56,0.15); -fx-border-color: #F29C38;
+                 -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8;
+                 -fx-padding: 10 16;">
+        <FontIcon iconLiteral="fas-clock" iconSize="14" iconColor="#F29C38"/>
+        <Label fx:id="lblPendingCount" text="Rapports en attente"
+               style="-fx-text-fill: #F29C38; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnSync" onAction="#syncPending" text="Synchroniser maintenant"
+                style="-fx-background-color: #F29C38; -fx-text-fill: white; -fx-font-weight: bold;
+                       -fx-padding: 6 14; -fx-background-radius: 6; -fx-cursor: hand;">
+            <graphic><FontIcon iconLiteral="fas-upload" iconSize="12" iconColor="white"/></graphic>
+        </Button>
+    </HBox>
+
     <!-- Section Signalements -->
     <VBox spacing="8" styleClass="activity-panel">
         <HBox alignment="CENTER_LEFT" spacing="8">
             <FontIcon iconLiteral="fas-flag" iconSize="13" iconColor="#F29C38"/>
             <Label text="Signalements" styleClass="panel-header"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button onAction="#nouveauSignalement" text="+ Nouveau signalement"
+                    style="-fx-background-color: transparent; -fx-text-fill: #F29C38;
+                           -fx-border-color: #F29C38; -fx-border-width: 1; -fx-border-radius: 6;
+                           -fx-padding: 5 12; -fx-cursor: hand; -fx-font-size: 11px;"/>
         </HBox>
         <Separator styleClass="panel-separator"/>
-        <TableView fx:id="signalTable" prefHeight="230"
-                   style="-fx-background-color: #1A2639; -fx-border-color: #2E435E; -fx-background-radius: 6; -fx-border-radius: 6;">
+        <TableView fx:id="signalTable" prefHeight="220"
+                   style="-fx-background-color: #1A2639; -fx-border-color: #2E435E;
+                          -fx-background-radius: 6; -fx-border-radius: 6;">
             <columns>
-                <TableColumn fx:id="colSignalDescription" text="Description" prefWidth="500"/>
+                <TableColumn fx:id="colSignalDescription" text="Description" prefWidth="480"/>
                 <TableColumn fx:id="colSignalStatus"      text="Statut"      prefWidth="140"/>
                 <TableColumn fx:id="colSignalAction"      text="Action"      prefWidth="120"/>
             </columns>
@@ -49,14 +71,20 @@
         <HBox alignment="CENTER_LEFT" spacing="8">
             <FontIcon iconLiteral="fas-exclamation-triangle" iconSize="13" iconColor="#E74C3C"/>
             <Label text="Incidents" styleClass="panel-header"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button onAction="#nouvelIncident" text="+ Nouvel incident"
+                    style="-fx-background-color: transparent; -fx-text-fill: #E74C3C;
+                           -fx-border-color: #E74C3C; -fx-border-width: 1; -fx-border-radius: 6;
+                           -fx-padding: 5 12; -fx-cursor: hand; -fx-font-size: 11px;"/>
         </HBox>
         <Separator styleClass="panel-separator"/>
         <TableView fx:id="incidentTable" VBox.vgrow="ALWAYS"
-                   style="-fx-background-color: #1A2639; -fx-border-color: #2E435E; -fx-background-radius: 6; -fx-border-radius: 6;">
+                   style="-fx-background-color: #1A2639; -fx-border-color: #2E435E;
+                          -fx-background-radius: 6; -fx-border-radius: 6;">
             <columns>
-                <TableColumn fx:id="colIncidentDescription" text="Description"  prefWidth="300"/>
-                <TableColumn fx:id="colIncidentEmail"       text="Signalé par"  prefWidth="200"/>
-                <TableColumn fx:id="colIncidentDate"        text="Date"         prefWidth="110"/>
+                <TableColumn fx:id="colIncidentDescription" text="Description"  prefWidth="280"/>
+                <TableColumn fx:id="colIncidentEmail"       text="Signalé par"  prefWidth="190"/>
+                <TableColumn fx:id="colIncidentDate"        text="Date"         prefWidth="100"/>
                 <TableColumn fx:id="colIncidentStatus"      text="Statut"       prefWidth="110"/>
                 <TableColumn fx:id="colIncidentAction"      text="Action"       prefWidth="110"/>
             </columns>

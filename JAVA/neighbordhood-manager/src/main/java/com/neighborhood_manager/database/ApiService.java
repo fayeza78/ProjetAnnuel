@@ -307,6 +307,57 @@ public class ApiService {
     }
 
     /**
+     * POST /signalements - Crée un nouveau signalement
+     * Champs requis : motif, cible_type, cible_id
+     * Champ interdit : statut (géré par le serveur)
+     */
+    public static CompletableFuture<Boolean> postSignalement(String motif, String cibleType, String cibleId) {
+        String token = SessionManager.getInstance().getAccessToken();
+        String esc     = motif.replace("\\", "\\\\").replace("\"", "\\\"");
+        String escType = cibleType.replace("\\", "\\\\").replace("\"", "\\\"");
+        String escId   = cibleId.replace("\\", "\\\\").replace("\"", "\\\"");
+
+        // cible_id doit TOUJOURS être une string dans le body (exigé par l'API)
+        String jsonBody = "{\"motif\":\"" + esc + "\",\"cible_type\":\"" + escType + "\",\"cible_id\":\"" + escId + "\"}";
+
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/signalements"))
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json");
+        if (token != null) builder.header("Authorization", "Bearer " + token);
+        return httpClient.sendAsync(
+                builder.POST(HttpRequest.BodyPublishers.ofString(jsonBody)).build(),
+                HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200 || response.statusCode() == 201) return true;
+                    System.err.println("Erreur POST /signalements : " + response.statusCode() + " " + response.body());
+                    return false;
+                });
+    }
+
+    /**
+     * POST /incidents - Crée un nouvel incident
+     */
+    public static CompletableFuture<Boolean> postIncident(String description) {
+        String token = SessionManager.getInstance().getAccessToken();
+        String escaped = description.replace("\\", "\\\\").replace("\"", "\\\"");
+        String jsonBody = "{\"description\": \"" + escaped + "\", \"statut\": \"ouvert\"}";
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/incidents"))
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json");
+        if (token != null) builder.header("Authorization", "Bearer " + token);
+        return httpClient.sendAsync(
+                builder.POST(HttpRequest.BodyPublishers.ofString(jsonBody)).build(),
+                HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200 || response.statusCode() == 201) return true;
+                    System.err.println("Erreur POST /incidents : " + response.statusCode() + " " + response.body());
+                    return false;
+                });
+    }
+
+    /**
      * GET /incidents - Liste tous les incidents
      */
     public static CompletableFuture<String> fetchIncidents() {

@@ -4,6 +4,7 @@ import com.neighborhood_manager.database.ApiService;
 import com.neighborhood_manager.database.DatabaseConnection;
 import com.neighborhood_manager.database.SessionManager;
 import com.neighborhood_manager.models.Incident;
+import com.neighborhood_manager.models.IncidentEntry;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -13,22 +14,21 @@ import javafx.scene.control.Label;
 
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StatistiquesController {
 
-    // Graphiques
     @FXML private PieChart pieIncidents;
     @FXML private BarChart<String, Number> barRoles;
     @FXML private LineChart<String, Number> lineChart;
 
-    // Cartes de synthèse
     @FXML private Label lblTotalVoisins;
     @FXML private Label lblEnLigne;
     @FXML private Label lblIncidentsOuverts;
     @FXML private Label lblTauxResolution;
-
-    // Indicateurs
     @FXML private Label lblDataSource;
     @FXML private Button btnRefresh;
 
@@ -47,27 +47,23 @@ public class StatistiquesController {
             return;
         }
 
-        // Incidents → PieChart + LineChart + cartes incidents
-        ApiService.fetchSignalements()
-                .thenAccept(json -> {
-                    List<Incident> all = parseIncidents(json);
-                    DatabaseConnection.cacheIncidents(all); // met à jour le cache offline
-                    long ouverts  = all.stream().filter(i -> "En cours".equals(i.getStatut())).count();
-                    long resolus  = all.stream().filter(i -> "Résolu".equals(i.getStatut())).count();
-                    Platform.runLater(() -> {
-                        updatePieChart(ouverts, resolus);
-                        updateLineChart(all);
-                        updateIncidentCards(ouverts, resolus);
-                        setDataSource("Données en temps réel — API");
-                    });
-                })
+        // Signalements + Incidents en parallèle
+        CompletableFuture<List<Incident>> futureSignal = ApiService.fetchSignalements()
+                .thenApply(this::parseSignalements)
                 .exceptionally(ex -> {
-                    Platform.runLater(this::loadIncidentsFromCache);
-                    return null;
+                    System.out.println("[Stats] /signalements injoignable, fallback cache.");
+                    return DatabaseConnection.loadCachedIncidents();
                 });
 
-        // Voisins → BarChart + carte total
-        ApiService.fetchVoisinsFromServer()
+        CompletableFuture<List<IncidentEntry>> futureIncident = ApiService.fetchIncidents()
+                .thenApply(this::parseIncidents)
+                .exceptionally(ex -> {
+                    System.out.println("[Stats] /incidents injoignable, fallback cache.");
+                    return DatabaseConnection.loadCachedIncidentEntries();
+                });
+
+        // Voisins
+        CompletableFuture<Void> futureVoisins = ApiService.fetchVoisinsFromServer()
                 .thenAccept(json -> {
                     int total = json.split("\\{\\s*\"id_user\"").length - 1;
                     Map<String, Integer> roles = parseRoles(json);
@@ -76,48 +72,71 @@ public class StatistiquesController {
                         updateBarChart(roles);
                     });
                 })
+                .exceptionally(ex -> { Platform.runLater(this::loadVoisinsFromCache); return null; });
+
+        // Présence
+        CompletableFuture<Void> futurePresence = ApiService.fetchPresenceUsers()
+                .thenAccept(json -> {
+                    int count = (json != null && !json.equals("[]") && !json.isBlank() && json.contains("{"))
+                            ? json.split("\\{").length - 1 : 0;
+                    final int fc = count;
+                    Platform.runLater(() -> { if (lblEnLigne != null) lblEnLigne.setText(String.valueOf(fc)); });
+                })
                 .exceptionally(ex -> {
-                    Platform.runLater(this::loadVoisinsFromCache);
+                    Platform.runLater(() -> { if (lblEnLigne != null) lblEnLigne.setText("0"); });
                     return null;
                 });
 
-        // Présence → carte en ligne
-        ApiService.fetchPresenceUsers()
-                .thenAccept(json -> {
-                    int count = 0;
-                    if (json != null && !json.equals("[]") && !json.isBlank()) {
-                        count = json.contains("{") ? json.split("\\{").length - 1 : 1;
-                    }
-                    final int finalCount = count;
-                    Platform.runLater(() -> {
-                        if (lblEnLigne != null) lblEnLigne.setText(String.valueOf(finalCount));
-                        setRefreshing(false);
-                    });
-                })
-                .exceptionally(ex -> {
-                    Platform.runLater(() -> {
-                        if (lblEnLigne != null) lblEnLigne.setText("0");
-                        setRefreshing(false);
-                    });
-                    return null;
-                });
+        // Quand signalements + incidents sont prêts, on combine
+        CompletableFuture.allOf(futureSignal, futureIncident).thenAccept(v -> {
+            List<Incident>      signaux   = futureSignal.join();
+            List<IncidentEntry> incidents = futureIncident.join();
+
+            DatabaseConnection.cacheIncidents(signaux);
+            DatabaseConnection.cacheIncidentEntries(incidents);
+
+            // Statuts combinés : toutes sources confondues
+            List<String> allStatuts = Stream.concat(
+                    signaux.stream().map(Incident::getStatut),
+                    incidents.stream().map(IncidentEntry::getStatut)
+            ).collect(Collectors.toList());
+
+            long ouverts = allStatuts.stream().filter("En cours"::equals).count();
+            long resolus = allStatuts.stream().filter("Résolu"::equals).count();
+
+            Platform.runLater(() -> {
+                updatePieChart(ouverts, resolus);
+                updateLineChart(allStatuts);
+                updateIncidentCards(ouverts, resolus);
+                setDataSource("Données en temps réel — API (" + signaux.size() + " signalements + " + incidents.size() + " incidents)");
+            });
+        });
+
+        // Libère le bouton quand tout est terminé
+        CompletableFuture.allOf(futureSignal, futureIncident, futureVoisins, futurePresence)
+                .thenRun(() -> Platform.runLater(() -> setRefreshing(false)));
     }
 
     // ======================== MODE OFFLINE ========================
 
     private void loadFromSQLite() {
         setDataSource("Mode hors ligne — données depuis le cache local");
-        loadIncidentsFromCache();
         loadVoisinsFromCache();
         if (lblEnLigne != null) lblEnLigne.setText("0");
-    }
 
-    private void loadIncidentsFromCache() {
-        List<Incident> all = DatabaseConnection.loadCachedIncidents();
-        long ouverts = all.stream().filter(i -> "En cours".equals(i.getStatut())).count();
-        long resolus = all.stream().filter(i -> "Résolu".equals(i.getStatut())).count();
+        List<Incident>      signaux   = DatabaseConnection.loadCachedIncidents();
+        List<IncidentEntry> incidents = DatabaseConnection.loadCachedIncidentEntries();
+
+        List<String> allStatuts = Stream.concat(
+                signaux.stream().map(Incident::getStatut),
+                incidents.stream().map(IncidentEntry::getStatut)
+        ).collect(Collectors.toList());
+
+        long ouverts = allStatuts.stream().filter("En cours"::equals).count();
+        long resolus = allStatuts.stream().filter("Résolu"::equals).count();
+
         updatePieChart(ouverts, resolus);
-        updateLineChart(all);
+        updateLineChart(allStatuts);
         updateIncidentCards(ouverts, resolus);
     }
 
@@ -160,7 +179,6 @@ public class StatistiquesController {
                 new PieChart.Data("En cours (" + ouverts + ")", ouverts),
                 new PieChart.Data("Résolus (" + resolus + ")", resolus)
         );
-        // Couleurs appliquées au prochain pulse (les nœuds ne sont créés qu'après setAll)
         Platform.runLater(() -> {
             List<PieChart.Data> data = pieIncidents.getData();
             if (data.size() >= 1 && data.get(0).getNode() != null)
@@ -171,34 +189,35 @@ public class StatistiquesController {
     }
 
     private void updateBarChart(Map<String, Integer> roles) {
-        if (barRoles == null) return;
-        barRoles.getData().clear();
-        if (roles.isEmpty()) return;
+        if (barRoles == null || roles.isEmpty()) return;
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Voisins");
-        for (Map.Entry<String, Integer> entry : roles.entrySet()) {
-            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        for (Map.Entry<String, Integer> e : roles.entrySet()) {
+            series.getData().add(new XYChart.Data<>(e.getKey(), e.getValue()));
         }
         barRoles.getData().setAll(series);
     }
 
-    private void updateLineChart(List<Incident> all) {
+    /**
+     * Découpe la liste combinée de statuts en 5 lots max et trace deux séries :
+     * "En cours" et "Résolus".
+     */
+    private void updateLineChart(List<String> allStatuts) {
         if (lineChart == null) return;
         lineChart.getData().clear();
-        if (all.isEmpty()) return;
+        if (allStatuts.isEmpty()) return;
 
-        // Découpe en 5 lots maximum pour visualiser la tendance
-        int batchSize = Math.max(1, (all.size() + 4) / 5);
+        int batchSize = Math.max(1, (allStatuts.size() + 4) / 5);
         XYChart.Series<String, Number> seriesOpen     = new XYChart.Series<>();
         XYChart.Series<String, Number> seriesResolved = new XYChart.Series<>();
         seriesOpen.setName("En cours");
         seriesResolved.setName("Résolus");
 
         int batchIdx = 1;
-        for (int i = 0; i < all.size(); i += batchSize) {
-            List<Incident> batch = all.subList(i, Math.min(i + batchSize, all.size()));
-            long open     = batch.stream().filter(inc -> "En cours".equals(inc.getStatut())).count();
-            long resolved = batch.stream().filter(inc -> "Résolu".equals(inc.getStatut())).count();
+        for (int i = 0; i < allStatuts.size(); i += batchSize) {
+            List<String> batch = allStatuts.subList(i, Math.min(i + batchSize, allStatuts.size()));
+            long open     = batch.stream().filter("En cours"::equals).count();
+            long resolved = batch.stream().filter("Résolu"::equals).count();
             String label  = "Lot " + batchIdx++;
             seriesOpen.getData().add(new XYChart.Data<>(label, open));
             seriesResolved.getData().add(new XYChart.Data<>(label, resolved));
@@ -218,7 +237,7 @@ public class StatistiquesController {
 
     // ======================== PARSEURS ========================
 
-    private List<Incident> parseIncidents(String json) {
+    private List<Incident> parseSignalements(String json) {
         List<Incident> list = new ArrayList<>();
         String[] blocks = json.split("\\{\\s*\"id_signalement\"");
         for (int i = 1; i < blocks.length; i++) {
@@ -237,6 +256,35 @@ public class StatistiquesController {
 
             if (!id.isEmpty()) {
                 try { list.add(new Incident(Integer.parseInt(id), motif, statut)); }
+                catch (NumberFormatException ignored) {}
+            }
+        }
+        return list;
+    }
+
+    private List<IncidentEntry> parseIncidents(String json) {
+        List<IncidentEntry> list = new ArrayList<>();
+        String[] blocks = json.split("\\{\\s*\"id_incident\"");
+        for (int i = 1; i < blocks.length; i++) {
+            String block = blocks[i];
+            String id = "";
+            Matcher mId = Pattern.compile("^\\s*:\\s*(\\d+)").matcher(block);
+            if (mId.find()) id = mId.group(1);
+
+            String description = "Aucune description";
+            Matcher mDesc = Pattern.compile("\"description\"\\s*:\\s*\"([^\"]+)\"").matcher(block);
+            if (mDesc.find()) description = mDesc.group(1);
+
+            String statut = "En cours";
+            Matcher mStatut = Pattern.compile("\"statut\"\\s*:\\s*\"([^\"]+)\"").matcher(block);
+            if (mStatut.find()) statut = mStatut.group(1).equals("ouvert") ? "En cours" : "Résolu";
+
+            String email = "";
+            Matcher mEmail = Pattern.compile("\"email\"\\s*:\\s*\"([^\"]+)\"").matcher(block);
+            if (mEmail.find()) email = mEmail.group(1);
+
+            if (!id.isEmpty()) {
+                try { list.add(new IncidentEntry(Integer.parseInt(id), description, statut, email, "")); }
                 catch (NumberFormatException ignored) {}
             }
         }
