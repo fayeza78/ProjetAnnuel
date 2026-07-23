@@ -7,6 +7,7 @@
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.neighborhood_manager.SettingsController"
             fitToWidth="true"
+            VBox.vgrow="ALWAYS"
             style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
 
     <VBox spacing="0">
@@ -57,6 +58,18 @@
             <Button text="Réinitialiser les paramètres" onAction="#resetDefaults"
                     style="-fx-background-color: nm-card-bg; -fx-text-fill: nm-text-muted; -fx-border-color: nm-border; -fx-border-radius: 8; -fx-border-width: 1; -fx-background-radius: 8; -fx-padding: 9 22; -fx-cursor: hand;"/>
         </HBox>
+
+        <Region minHeight="32"/>
+
+        <!-- Section Désinstallation -->
+        <VBox spacing="14"
+              style="-fx-background-color: #2a1a1a; -fx-background-radius: 14; -fx-padding: 22; -fx-border-color: #7f1d1d; -fx-border-radius: 14; -fx-border-width: 1;">
+            <Label text="Zone dangereuse" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #f87171;"/>
+            <Label text="La désinstallation supprime le raccourci, les fichiers d'installation et retire l'application du système."
+                   style="-fx-text-fill: #fca5a5; -fx-font-size: 12px;"/>
+            <Button text="Désinstaller l'application" onAction="#handleUninstall"
+                    style="-fx-background-color: #7f1d1d; -fx-text-fill: #fecaca; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 24; -fx-cursor: hand; -fx-border-color: #991b1b; -fx-border-radius: 8; -fx-border-width: 1;"/>
+        </VBox>
 
     </VBox>
 </ScrollPane>

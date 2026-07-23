@@ -1,0 +1,13 @@
+/* Thème : Nuit Profonde (défaut) */
+.root {
+    nm-deep-bg:    #1a2638;
+    nm-card-bg:    #233348;
+    nm-border:     #2E435E;
+    nm-accent:     #F29C38;
+    nm-primary:    #0CA789;
+    nm-text:       white;
+    nm-text-muted: #8BA0B8;
+    nm-footer-bg:  #162030;
+    nm-input-bg:   #233348;
+    nm-hover-bg:   #2E435E;
+}

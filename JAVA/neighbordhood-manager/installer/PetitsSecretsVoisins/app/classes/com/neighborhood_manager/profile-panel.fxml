@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.neighborhood_manager.ProfileController"
+      alignment="TOP_CENTER" spacing="20">
+
+    <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+
+    <!-- En-tête -->
+    <Label text="Profil Administrateur"
+           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: nm-primary;"/>
+
+    <!-- Carte profil centrale -->
+    <VBox alignment="CENTER" spacing="14"
+          style="-fx-background-color: nm-card-bg; -fx-background-radius: 18; -fx-padding: 35 50; -fx-border-color: nm-border; -fx-border-radius: 18; -fx-border-width: 1; -fx-max-width: 520;">
+
+        <!-- Avatar circulaire -->
+        <Label fx:id="lblAvatar" text="A"
+               style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;
+                      -fx-background-color: nm-primary; -fx-background-radius: 50;
+                      -fx-min-width: 90; -fx-min-height: 90; -fx-max-width: 90; -fx-max-height: 90;
+                      -fx-alignment: center;"/>
+
+        <!-- Email -->
+        <Label fx:id="lblEmail" text=""
+               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: nm-text;"/>
+
+        <!-- Badge rôle -->
+        <Label fx:id="lblRole" text="Administrateur"
+               style="-fx-font-size: 12px; -fx-text-fill: nm-accent; -fx-font-weight: bold;
+                      -fx-background-color: derive(nm-accent, 80%); -fx-background-radius: 20;
+                      -fx-padding: 4 14;"/>
+    </VBox>
+
+    <!-- Carte informations de session -->
+    <VBox spacing="16" style="-fx-background-color: nm-card-bg; -fx-background-radius: 14; -fx-padding: 24;
+                               -fx-border-color: nm-border; -fx-border-radius: 14; -fx-border-width: 1; -fx-max-width: 520;">
+
+        <Label text="Informations de session" styleClass="settings-section-title"/>
+        <Separator style="-fx-background-color: nm-border;"/>
+
+        <!-- Statut -->
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <Label text="Statut" style="-fx-text-fill: nm-text-muted; -fx-min-width: 120;"/>
+            <Label fx:id="lblStatutValeur" text="—" style="-fx-text-fill: nm-text;"/>
+        </HBox>
+
+        <!-- Heure de connexion -->
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <Label text="Connecté depuis" style="-fx-text-fill: nm-text-muted; -fx-min-width: 120;"/>
+            <Label fx:id="lblConnexionValeur" text="—" style="-fx-text-fill: nm-text;"/>
+        </HBox>
+
+        <!-- Token JWT -->
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <Label text="Token JWT" style="-fx-text-fill: nm-text-muted; -fx-min-width: 120;"/>
+            <Label fx:id="lblTokenValeur" text="—"
+                   style="-fx-text-fill: nm-text-muted; -fx-font-family: monospace; -fx-font-size: 11px;"/>
+        </HBox>
+
+    </VBox>
+
+    <!-- Bouton déconnexion -->
+    <Button fx:id="btnLogout" text="Se déconnecter" onAction="#handleLogout"
+            style="-fx-background-color: #C0392B; -fx-text-fill: white; -fx-font-weight: bold;
+                   -fx-background-radius: 8; -fx-padding: 11 30; -fx-cursor: hand; -fx-font-size: 13px;
+                   -fx-max-width: 520;"/>
+
+    <!-- Message post-déconnexion (caché par défaut) -->
+    <Label fx:id="lblMessage" text="" visible="false"
+           style="-fx-text-fill: #E74C3C; -fx-font-size: 12px; -fx-wrap-text: true; -fx-max-width: 520;
+                  -fx-alignment: center; -fx-text-alignment: center;"/>
+
+</VBox>

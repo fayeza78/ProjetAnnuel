@@ -1,9 +1,13 @@
 package com.neighborhood_manager;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class SettingsController {
 
@@ -148,5 +152,42 @@ public class SettingsController {
         if (statusLabel != null) {
             statusLabel.setText("✓  " + msg);
         }
+    }
+
+    @FXML
+    private void handleUninstall() {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Désinstaller l'application");
+        confirm.setHeaderText("Désinstaller Petits Secrets Entre Voisins ?");
+        confirm.setContentText("Le raccourci Bureau et les fichiers d'installation seront supprimés définitivement.");
+
+        confirm.showAndWait().ifPresent(result -> {
+            if (result != ButtonType.OK) return;
+            try {
+                String appName = "PetitsSecretsVoisins";
+                String installDir = System.getenv("LOCALAPPDATA") + "\\" + appName;
+                String shortcut = System.getenv("USERPROFILE") + "\\Desktop\\Petits Secrets Voisins.lnk";
+
+                new File(shortcut).delete();
+
+                new ProcessBuilder("reg", "delete",
+                    "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" + appName, "/f")
+                    .start();
+
+                // Script de suppression différée (le JAR peut être verrouillé)
+                String script = System.getenv("TEMP") + "\\uninstall_psv.bat";
+                try (FileWriter w = new FileWriter(script)) {
+                    w.write("@echo off\n:loop\ntimeout /t 2 /nobreak >nul\n");
+                    w.write("rmdir /S /Q \"" + installDir + "\" 2>nul\n");
+                    w.write("if exist \"" + installDir + "\" goto loop\ndel /F /Q \"%~f0\"\n");
+                }
+                new ProcessBuilder("cmd", "/c", "start", "", script).start();
+
+                Platform.exit();
+                System.exit(0);
+            } catch (IOException e) {
+                new Alert(Alert.AlertType.ERROR, "Erreur : " + e.getMessage()).showAndWait();
+            }
+        });
     }
 }

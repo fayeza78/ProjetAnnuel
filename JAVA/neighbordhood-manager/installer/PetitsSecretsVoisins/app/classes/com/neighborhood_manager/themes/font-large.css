@@ -1,0 +1,8 @@
+/* Police : Grande */
+.root { -fx-font-size: 15px; }
+.logo-text-primary, .logo-text-secondary { -fx-font-size: 26px; }
+.panel-header { -fx-font-size: 22px; }
+.stat-card, .stat-card-highlight { -fx-padding: 38; -fx-min-width: 220; }
+.content-area  { -fx-padding: 40; }
+.nav-button    { -fx-padding: 11 20; }
+.nav-button-active { -fx-padding: 11 22; }

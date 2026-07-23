@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.neighborhood_manager.PrimaryController"
+            styleClass="main-container">
+
+    <top>
+        <HBox styleClass="top-navbar" BorderPane.alignment="CENTER">
+            <VBox alignment="CENTER" spacing="-5">
+                <HBox alignment="CENTER">
+                    <Label text="petits" styleClass="logo-text-primary"/>
+                    <Label text="secrets" styleClass="logo-text-primary"/>
+                </HBox>
+                <Label text="entrevoisins" styleClass="logo-text-secondary"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button text="Accueil" fx:id="btnHome" onAction="#goHome" styleClass="nav-button-active">
+                    <graphic><FontIcon iconLiteral="fas-home" iconSize="14" iconColor="white"/></graphic>
+                </Button>
+                <Button text="Voisins" fx:id="btnVoisins" onAction="#goVoisins" styleClass="nav-button">
+                    <graphic><FontIcon iconLiteral="fas-users" iconSize="14" iconColor="#8BA0B8"/></graphic>
+                </Button>
+                <Button text="Annonces" fx:id="btnAnnonces" onAction="#goAnnonces" styleClass="nav-button">
+                    <graphic><FontIcon iconLiteral="fas-bullhorn" iconSize="14" iconColor="#8BA0B8"/></graphic>
+                </Button>
+                <Button text="Incidents" fx:id="btnIncidents" onAction="#goIncidents" styleClass="nav-button">
+                    <graphic><FontIcon iconLiteral="fas-exclamation-triangle" iconSize="14" iconColor="#8BA0B8"/></graphic>
+                </Button>
+                <Button text="Statistiques" fx:id="btnStats" onAction="#goStats" styleClass="nav-button">
+                    <graphic><FontIcon iconLiteral="fas-chart-bar" iconSize="14" iconColor="#8BA0B8"/></graphic>
+                </Button>
+                <Button text="Messages" fx:id="btnMessages" onAction="#goMessages" styleClass="nav-button">
+                    <graphic><FontIcon iconLiteral="fas-envelope" iconSize="14" iconColor="#8BA0B8"/></graphic>
+                </Button>
+                <Button text="Plugins" fx:id="btnPlugins" onAction="#goPlugins" styleClass="nav-button">
+                    <graphic><FontIcon iconLiteral="fas-puzzle-piece" iconSize="14" iconColor="#8BA0B8"/></graphic>
+                </Button>
+            </HBox>
+
+            <Region style="-fx-min-width: 30;"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button fx:id="btnSettings" onAction="#goSettings" styleClass="icon-button-outline">
+                    <graphic><FontIcon iconLiteral="fas-cog" iconSize="16" iconColor="#8BA0B8"/></graphic>
+                </Button>
+                <Button text="Profil Admin" fx:id="btnProfil" onAction="#goProfile" styleClass="icon-button-outline">
+                    <graphic><FontIcon iconLiteral="fas-user-shield" iconSize="16" iconColor="#8BA0B8"/></graphic>
+                </Button>
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox fx:id="mainContent" spacing="24" styleClass="content-area">
+
+            <!-- En-tête : titre + badge de connexion -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <VBox spacing="3">
+                    <Label text="Tableau de bord" styleClass="dashboard-title"/>
+                    <Label fx:id="lblInfoEmail" text="Administrateur" styleClass="dashboard-subtitle"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblSyncStatus" text="Vérification..." styleClass="sync-badge-offline"/>
+            </HBox>
+
+            <!-- 4 cartes de statistiques -->
+            <HBox spacing="18">
+                <!-- Voisins inscrits -->
+                <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <FontIcon iconLiteral="fas-users" iconSize="13" iconColor="#0CA789"/>
+                        <Label text="VOISINS INSCRITS" styleClass="stat-card-label"/>
+                    </HBox>
+                    <Label fx:id="lblNbVoisins" text="—" styleClass="stat-value-big"/>
+                    <Label text="dans le quartier" styleClass="stat-card-sub"/>
+                </VBox>
+
+                <!-- En ligne -->
+                <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <FontIcon iconLiteral="fas-circle" iconSize="9" iconColor="#2ECC71"/>
+                        <Label text="EN LIGNE" styleClass="stat-card-label"/>
+                    </HBox>
+                    <Label fx:id="lblNbVoisinsOnline" text="—" styleClass="stat-value-big"/>
+                    <Label text="actifs maintenant" styleClass="stat-card-sub"/>
+                </VBox>
+
+                <!-- Incidents ouverts -->
+                <VBox spacing="8" styleClass="stat-card-highlight" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <FontIcon iconLiteral="fas-exclamation-triangle" iconSize="13" iconColor="#F29C38"/>
+                        <Label text="INCIDENTS OUVERTS" styleClass="stat-card-label"/>
+                    </HBox>
+                    <Label fx:id="lblNbIncidents" text="—" styleClass="stat-value-big-orange"/>
+                    <Label text="à traiter" styleClass="stat-card-sub"/>
+                </VBox>
+
+                <!-- Incidents résolus -->
+                <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <FontIcon iconLiteral="fas-check-circle" iconSize="13" iconColor="#0CA789"/>
+                        <Label text="INCIDENTS RÉSOLUS" styleClass="stat-card-label"/>
+                    </HBox>
+                    <Label fx:id="lblNbIncidentsResolus" text="—" styleClass="stat-value-big-green"/>
+                    <Label text="au total" styleClass="stat-card-sub"/>
+                </VBox>
+            </HBox>
+
+            <!-- Ligne inférieure : derniers signalements + infos système -->
+            <HBox spacing="18" VBox.vgrow="ALWAYS">
+
+                <!-- Panneau signalements récents -->
+                <VBox spacing="10" styleClass="activity-panel" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <FontIcon iconLiteral="fas-list-ul" iconSize="13" iconColor="#8BA0B8"/>
+                        <Label text="Derniers signalements" styleClass="panel-header"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Voir tout →" onAction="#goIncidents" styleClass="link-button"/>
+                    </HBox>
+                    <Separator styleClass="panel-separator"/>
+                    <VBox fx:id="recentIncidentsBox" spacing="6">
+                        <Label text="Chargement..." styleClass="empty-state-text"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Panneau infos système -->
+                <VBox spacing="10" styleClass="activity-panel" minWidth="230" maxWidth="270">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <FontIcon iconLiteral="fas-server" iconSize="13" iconColor="#8BA0B8"/>
+                        <Label text="Informations système" styleClass="panel-header"/>
+                    </HBox>
+                    <Separator styleClass="panel-separator"/>
+                    <VBox spacing="14">
+                        <VBox spacing="3">
+                            <Label text="COMPTE ADMIN" styleClass="stat-card-label"/>
+                            <Label fx:id="lblInfoAdminEmail" text="—" styleClass="info-label-value"/>
+                        </VBox>
+                        <Separator styleClass="panel-separator"/>
+                        <VBox spacing="3">
+                            <Label text="MODE DE CONNEXION" styleClass="stat-card-label"/>
+                            <Label fx:id="lblInfoMode" text="—" styleClass="info-label-value"/>
+                        </VBox>
+                        <Separator styleClass="panel-separator"/>
+                        <VBox spacing="3">
+                            <Label text="SERVEUR API" styleClass="stat-card-label"/>
+                            <Label text="51.77.245.139:3000" styleClass="info-label-value"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
+            </HBox>
+
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox styleClass="footer-bar">
+            <Label text="Petits secrets Entre Voisins — Administration" styleClass="footer-text"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="v1.0.0" styleClass="footer-text"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
