@@ -1,0 +1,4 @@
+--patch-module
+com.neighborhood_manager=_
+--add-reads
+com.neighborhood_manager=ALL-UNNAMED

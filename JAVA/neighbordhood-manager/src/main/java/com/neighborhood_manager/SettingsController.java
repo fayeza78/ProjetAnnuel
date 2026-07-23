@@ -15,12 +15,16 @@ public class SettingsController {
     @FXML private HBox fontButtonsContainer;
     @FXML private HBox layoutButtonsContainer;
     @FXML private Label statusLabel;
+    @FXML private Label lblCurrentVersion;
+    @FXML private Label lblUpdateStatus;
 
     @FXML
     public void initialize() {
         buildThemeCards();
         buildFontButtons();
         buildLayoutButtons();
+        if (lblCurrentVersion != null)
+            lblCurrentVersion.setText(UpdateService.getCurrentVersion());
     }
 
     // ──────────────────────────────────────────────
@@ -152,6 +156,20 @@ public class SettingsController {
         if (statusLabel != null) {
             statusLabel.setText("✓  " + msg);
         }
+    }
+
+    @FXML
+    private void handleCheckUpdate() {
+        if (lblUpdateStatus != null) lblUpdateStatus.setText("Vérification en cours…");
+        UpdateService.checkForUpdate().thenAccept(info -> javafx.application.Platform.runLater(() -> {
+            if (info == null) {
+                if (lblUpdateStatus != null) lblUpdateStatus.setText("Vous êtes à jour (v" + UpdateService.getCurrentVersion() + ").");
+                new Alert(Alert.AlertType.INFORMATION, "Aucune mise à jour disponible.").showAndWait();
+            } else {
+                if (lblUpdateStatus != null) lblUpdateStatus.setText("Version " + info.version() + " disponible !");
+                UpdateService.checkAndPrompt(false);
+            }
+        }));
     }
 
     @FXML

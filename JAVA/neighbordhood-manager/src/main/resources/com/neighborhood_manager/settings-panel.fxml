@@ -59,6 +59,21 @@
                     style="-fx-background-color: nm-card-bg; -fx-text-fill: nm-text-muted; -fx-border-color: nm-border; -fx-border-radius: 8; -fx-border-width: 1; -fx-background-radius: 8; -fx-padding: 9 22; -fx-cursor: hand;"/>
         </HBox>
 
+        <Region minHeight="16"/>
+
+        <!-- Section Mises à jour -->
+        <VBox spacing="14"
+              style="-fx-background-color: nm-card-bg; -fx-background-radius: 14; -fx-padding: 22; -fx-border-color: nm-border; -fx-border-radius: 14; -fx-border-width: 1;">
+            <Label text="Mises à jour" styleClass="settings-section-title"/>
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <Label text="Version actuelle :" style="-fx-text-fill: nm-text-muted; -fx-font-size: 12px;"/>
+                <Label fx:id="lblCurrentVersion" style="-fx-text-fill: nm-primary; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+            </HBox>
+            <Label fx:id="lblUpdateStatus" text="" style="-fx-text-fill: nm-text-muted; -fx-font-size: 12px;"/>
+            <Button text="Vérifier les mises à jour" onAction="#handleCheckUpdate"
+                    style="-fx-background-color: nm-accent; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 9 22; -fx-cursor: hand;"/>
+        </VBox>
+
         <Region minHeight="32"/>
 
         <!-- Section Désinstallation -->

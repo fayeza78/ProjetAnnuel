@@ -67,6 +67,7 @@ public class PrimaryController {
             setSyncStatus(true);
             if (lblInfoMode != null) lblInfoMode.setText("API REST (en ligne)");
             updateDashboardStatsOnline();
+            UpdateService.checkAndPrompt(true);
         } else {
             setSyncStatus(false);
             if (lblInfoMode != null) lblInfoMode.setText("SQLite (hors ligne)");
