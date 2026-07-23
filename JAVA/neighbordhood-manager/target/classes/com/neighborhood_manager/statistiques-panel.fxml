@@ -36,7 +36,7 @@
             <Label fx:id="lblTotalVoisins" text="—" styleClass="stat-value-big"/>
         </VBox>
         <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
-            <Label text="EN LIGNE" styleClass="stat-card-label"/>
+            <Label fx:id="lblEnLigneTitre" text="EN LIGNE" styleClass="stat-card-label"/>
             <Label fx:id="lblEnLigne" text="—" styleClass="stat-value-big"/>
         </VBox>
         <VBox spacing="6" styleClass="stat-card-highlight" HBox.hgrow="ALWAYS">

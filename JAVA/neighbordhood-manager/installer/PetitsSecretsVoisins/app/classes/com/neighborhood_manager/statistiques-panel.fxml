@@ -5,8 +5,12 @@
 <?import javafx.scene.chart.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox spacing="20" styleClass="content-area" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.neighborhood_manager.StatistiquesController"
+<ScrollPane fitToWidth="true"
+            style="-fx-background-color: #1A2639; -fx-background: #1A2639;"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.neighborhood_manager.StatistiquesController">
+
+<VBox spacing="20" styleClass="content-area"
       style="-fx-background-color: #1A2639; -fx-padding: 30;">
 
     <!-- En-tête -->
@@ -32,7 +36,7 @@
             <Label fx:id="lblTotalVoisins" text="—" styleClass="stat-value-big"/>
         </VBox>
         <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
-            <Label text="EN LIGNE" styleClass="stat-card-label"/>
+            <Label fx:id="lblEnLigneTitre" text="EN LIGNE" styleClass="stat-card-label"/>
             <Label fx:id="lblEnLigne" text="—" styleClass="stat-value-big"/>
         </VBox>
         <VBox spacing="6" styleClass="stat-card-highlight" HBox.hgrow="ALWAYS">
@@ -45,9 +49,8 @@
         </VBox>
     </HBox>
 
-    <!-- Ligne 1 : PieChart + BarChart -->
+    <!-- Ligne 1 : PieChart + BarChart rôles -->
     <HBox spacing="16">
-        <!-- PieChart : répartition incidents -->
         <VBox spacing="8" styleClass="activity-panel" HBox.hgrow="ALWAYS">
             <Label text="Répartition des incidents" styleClass="panel-header"/>
             <Separator styleClass="panel-separator"/>
@@ -59,7 +62,6 @@
                       styleClass="dark-chart"/>
         </VBox>
 
-        <!-- BarChart : voisins par rôle -->
         <VBox spacing="8" styleClass="activity-panel" HBox.hgrow="ALWAYS">
             <Label text="Voisins par rôle" styleClass="panel-header"/>
             <Separator styleClass="panel-separator"/>
@@ -74,18 +76,53 @@
         </VBox>
     </HBox>
 
-    <!-- Ligne 2 : LineChart pleine largeur -->
+    <!-- Ligne 2 : Comparaison Signalements vs Incidents -->
     <VBox spacing="8" styleClass="activity-panel">
-        <Label text="Tendance de résolution par lots d'incidents" styleClass="panel-header"/>
+        <Label text="Signalements vs Incidents — En cours / Résolus" styleClass="panel-header"/>
         <Separator styleClass="panel-separator"/>
         <LineChart fx:id="lineChart"
                    prefHeight="210"
                    animated="false"
                    createSymbols="true"
                    styleClass="dark-chart">
-            <xAxis><CategoryAxis label="Lots d'incidents"/></xAxis>
+            <xAxis><CategoryAxis label="Source"/></xAxis>
             <yAxis><NumberAxis autoRanging="true" label="Nombre"/></yAxis>
         </LineChart>
     </VBox>
 
+    <!-- Ligne 3 : Participations aux événements -->
+    <VBox spacing="12" styleClass="activity-panel">
+        <Label text="Participations aux événements" styleClass="panel-header"/>
+        <Separator styleClass="panel-separator"/>
+
+        <HBox spacing="16">
+            <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="ÉVÉNEMENTS" styleClass="stat-card-label"/>
+                <Label fx:id="lblTotalEvenements" text="—" styleClass="stat-value-big"/>
+            </VBox>
+            <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="CONFIRMÉES" styleClass="stat-card-label"/>
+                <Label fx:id="lblConfirmed" text="—" styleClass="stat-value-big-green"/>
+            </VBox>
+            <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="INTÉRESSÉS" styleClass="stat-card-label"/>
+                <Label fx:id="lblInterested" text="—" styleClass="stat-value-big"/>
+            </VBox>
+            <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="REFUSÉES" styleClass="stat-card-label"/>
+                <Label fx:id="lblDeclined" text="—" styleClass="stat-value-big-orange"/>
+            </VBox>
+        </HBox>
+
+        <BarChart fx:id="barParticipations"
+                  prefHeight="220"
+                  animated="false"
+                  legendVisible="false"
+                  styleClass="dark-chart">
+            <xAxis><CategoryAxis label="Utilisateur"/></xAxis>
+            <yAxis><NumberAxis autoRanging="true" label="Participations"/></yAxis>
+        </BarChart>
+    </VBox>
+
 </VBox>
+</ScrollPane>

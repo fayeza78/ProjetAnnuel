@@ -30,6 +30,7 @@ public class StatistiquesController {
     @FXML private LineChart<String, Number> lineChart;
 
     @FXML private Label lblTotalVoisins;
+    @FXML private Label lblEnLigneTitre;
     @FXML private Label lblEnLigne;
     @FXML private Label lblIncidentsOuverts;
     @FXML private Label lblTauxResolution;
@@ -99,7 +100,10 @@ public class StatistiquesController {
                         }
                     }
                     final int fc = count;
-                    Platform.runLater(() -> { if (lblEnLigne != null) lblEnLigne.setText(String.valueOf(fc)); });
+                    Platform.runLater(() -> {
+                        if (lblEnLigneTitre != null) lblEnLigneTitre.setText("EN LIGNE");
+                        if (lblEnLigne != null)      lblEnLigne.setText(String.valueOf(fc));
+                    });
                 })
                 .exceptionally(ex -> {
                     Platform.runLater(() -> { if (lblEnLigne != null) lblEnLigne.setText("0"); });
@@ -170,7 +174,8 @@ public class StatistiquesController {
     private void loadFromSQLite() {
         setDataSource("Mode hors ligne — données depuis le cache local");
         loadVoisinsFromCache();
-        if (lblEnLigne != null) lblEnLigne.setText("0");
+        if (lblEnLigneTitre != null) lblEnLigneTitre.setText("HORS LIGNE");
+        if (lblEnLigne != null)      lblEnLigne.setText("—");
 
         List<Incident>      signaux   = DatabaseConnection.loadCachedIncidents();
         List<IncidentEntry> incidents = DatabaseConnection.loadCachedIncidentEntries();

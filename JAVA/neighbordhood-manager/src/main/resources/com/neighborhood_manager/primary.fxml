@@ -80,11 +80,11 @@
                 <!-- En ligne -->
                 <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
                     <HBox alignment="CENTER_LEFT" spacing="8">
-                        <FontIcon iconLiteral="fas-circle" iconSize="9" iconColor="#2ECC71"/>
-                        <Label text="EN LIGNE" styleClass="stat-card-label"/>
+                        <FontIcon fx:id="iconOnlineStatus" iconLiteral="fas-circle" iconSize="9" iconColor="#2ECC71"/>
+                        <Label fx:id="lblOnlineTitle" text="EN LIGNE" styleClass="stat-card-label"/>
                     </HBox>
                     <Label fx:id="lblNbVoisinsOnline" text="—" styleClass="stat-value-big"/>
-                    <Label text="actifs maintenant" styleClass="stat-card-sub"/>
+                    <Label fx:id="lblOnlineSub" text="actifs maintenant" styleClass="stat-card-sub"/>
                 </VBox>
 
                 <!-- Incidents ouverts -->

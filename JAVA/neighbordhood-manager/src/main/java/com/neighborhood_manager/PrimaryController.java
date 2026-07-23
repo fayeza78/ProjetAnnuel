@@ -43,6 +43,8 @@ public class PrimaryController {
 
     @FXML private Label lblNbVoisins;
     @FXML private Label lblNbVoisinsOnline;
+    @FXML private Label lblOnlineTitle;
+    @FXML private Label lblOnlineSub;
     @FXML private Label lblNbIncidents;
     @FXML private Label lblNbIncidentsResolus;
     @FXML private Label lblSyncStatus;
@@ -115,7 +117,11 @@ public class PrimaryController {
                         }
                     }
                     final int fc = count;
-                    Platform.runLater(() -> { if (lblNbVoisinsOnline != null) lblNbVoisinsOnline.setText(String.valueOf(fc)); });
+                    Platform.runLater(() -> {
+                        if (lblOnlineTitle != null)     lblOnlineTitle.setText("EN LIGNE");
+                        if (lblOnlineSub != null)       lblOnlineSub.setText("actifs maintenant");
+                        if (lblNbVoisinsOnline != null) lblNbVoisinsOnline.setText(String.valueOf(fc));
+                    });
                 })
                 .exceptionally(ex -> {
                     Platform.runLater(() -> { if (lblNbVoisinsOnline != null) lblNbVoisinsOnline.setText("0"); });
@@ -170,7 +176,9 @@ public class PrimaryController {
         int resolusInc = countSqlite("SELECT COUNT(*) FROM local_incidents_api WHERE status = 'Résolu'");
 
         if (lblNbVoisins != null)          lblNbVoisins.setText(String.valueOf(countSqlite("SELECT COUNT(*) FROM cached_users")));
-        if (lblNbVoisinsOnline != null)    lblNbVoisinsOnline.setText("0");
+        if (lblOnlineTitle != null)        lblOnlineTitle.setText("HORS LIGNE");
+        if (lblNbVoisinsOnline != null)    lblNbVoisinsOnline.setText("—");
+        if (lblOnlineSub != null)          lblOnlineSub.setText("mode hors ligne");
         if (lblNbIncidents != null)        lblNbIncidents.setText(String.valueOf(ouvertsSig + ouvertsInc));
         if (lblNbIncidentsResolus != null) lblNbIncidentsResolus.setText(String.valueOf(resolusSig + resolusInc));
 

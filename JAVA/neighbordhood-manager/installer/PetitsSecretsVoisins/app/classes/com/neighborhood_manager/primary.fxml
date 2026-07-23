@@ -28,17 +28,11 @@
                 <Button text="Voisins" fx:id="btnVoisins" onAction="#goVoisins" styleClass="nav-button">
                     <graphic><FontIcon iconLiteral="fas-users" iconSize="14" iconColor="#8BA0B8"/></graphic>
                 </Button>
-                <Button text="Annonces" fx:id="btnAnnonces" onAction="#goAnnonces" styleClass="nav-button">
-                    <graphic><FontIcon iconLiteral="fas-bullhorn" iconSize="14" iconColor="#8BA0B8"/></graphic>
-                </Button>
                 <Button text="Incidents" fx:id="btnIncidents" onAction="#goIncidents" styleClass="nav-button">
                     <graphic><FontIcon iconLiteral="fas-exclamation-triangle" iconSize="14" iconColor="#8BA0B8"/></graphic>
                 </Button>
                 <Button text="Statistiques" fx:id="btnStats" onAction="#goStats" styleClass="nav-button">
                     <graphic><FontIcon iconLiteral="fas-chart-bar" iconSize="14" iconColor="#8BA0B8"/></graphic>
-                </Button>
-                <Button text="Messages" fx:id="btnMessages" onAction="#goMessages" styleClass="nav-button">
-                    <graphic><FontIcon iconLiteral="fas-envelope" iconSize="14" iconColor="#8BA0B8"/></graphic>
                 </Button>
                 <Button text="Plugins" fx:id="btnPlugins" onAction="#goPlugins" styleClass="nav-button">
                     <graphic><FontIcon iconLiteral="fas-puzzle-piece" iconSize="14" iconColor="#8BA0B8"/></graphic>
@@ -86,11 +80,11 @@
                 <!-- En ligne -->
                 <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
                     <HBox alignment="CENTER_LEFT" spacing="8">
-                        <FontIcon iconLiteral="fas-circle" iconSize="9" iconColor="#2ECC71"/>
-                        <Label text="EN LIGNE" styleClass="stat-card-label"/>
+                        <FontIcon fx:id="iconOnlineStatus" iconLiteral="fas-circle" iconSize="9" iconColor="#2ECC71"/>
+                        <Label fx:id="lblOnlineTitle" text="EN LIGNE" styleClass="stat-card-label"/>
                     </HBox>
                     <Label fx:id="lblNbVoisinsOnline" text="—" styleClass="stat-value-big"/>
-                    <Label text="actifs maintenant" styleClass="stat-card-sub"/>
+                    <Label fx:id="lblOnlineSub" text="actifs maintenant" styleClass="stat-card-sub"/>
                 </VBox>
 
                 <!-- Incidents ouverts -->
