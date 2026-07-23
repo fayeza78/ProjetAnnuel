@@ -64,7 +64,7 @@
         <!-- Section Désinstallation -->
         <VBox spacing="14"
               style="-fx-background-color: #2a1a1a; -fx-background-radius: 14; -fx-padding: 22; -fx-border-color: #7f1d1d; -fx-border-radius: 14; -fx-border-width: 1;">
-            <Label text="Zone dangereuse" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #f87171;"/>
+            <Label text="Désinstallation " style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #f87171;"/>
             <Label text="La désinstallation supprime le raccourci, les fichiers d'installation et retire l'application du système."
                    style="-fx-text-fill: #fca5a5; -fx-font-size: 12px;"/>
             <Button text="Désinstaller l'application" onAction="#handleUninstall"

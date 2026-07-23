@@ -109,7 +109,7 @@ public class ApiService {
         String token = SessionManager.getInstance().getAccessToken();
 
         // 1. On prépare le contenu JSON que le serveur attend
-        String jsonBody = "{\"statut\": \"traite\"}";
+        String jsonBody = "{\"statut\": \"resolu\"}";
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/signalements/" + id + "/traiter"))
@@ -341,7 +341,7 @@ public class ApiService {
     public static CompletableFuture<Boolean> postIncident(String description) {
         String token = SessionManager.getInstance().getAccessToken();
         String escaped = description.replace("\\", "\\\\").replace("\"", "\\\"");
-        String jsonBody = "{\"description\": \"" + escaped + "\", \"statut\": \"ouvert\"}";
+        String jsonBody = "{\"description\": \"" + escaped + "\"}";
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/incidents"))
                 .header("Content-Type", "application/json")
@@ -378,7 +378,7 @@ public class ApiService {
      */
     public static CompletableFuture<Boolean> updateIncidentStatut(int id) {
         String token = SessionManager.getInstance().getAccessToken();
-        String jsonBody = "{\"statut\": \"traite\"}";
+        String jsonBody = "{\"statut\": \"resolu\"}";
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/incidents/" + id + "/statut"))
                 .header("Accept", "application/json")
@@ -391,6 +391,30 @@ public class ApiService {
                     if (response.statusCode() == 200) return true;
                     System.err.println("Erreur traitement incident : " + response.statusCode() + " - " + response.body());
                     return false;
+                });
+    }
+
+    /**
+     * GET /stats/participations - Statistiques de participation des utilisateurs
+     */
+    public static CompletableFuture<String> fetchStatsParticipations() {
+        String token = SessionManager.getInstance().getAccessToken();
+
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/stats/participations"))
+                .header("Accept", "application/json");
+
+        if (token != null) {
+            builder.header("Authorization", "Bearer " + token);
+        }
+
+        return httpClient.sendAsync(builder.GET().build(), HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return response.body();
+                    } else {
+                        throw new RuntimeException("Erreur participations : " + response.statusCode());
+                    }
                 });
     }
 

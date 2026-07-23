@@ -95,10 +95,16 @@ public class AnalyseSocialePlugin implements Plugin {
                     })
                     .thenCombine(ApiService.fetchPresenceUsers(), (stats, presenceJson) -> {
                         int connectes = 0;
-                        if (presenceJson != null && !presenceJson.equals("[]") && !presenceJson.isEmpty()) {
-                            connectes = presenceJson.contains("{")
-                                    ? presenceJson.split("\\{").length - 1
-                                    : presenceJson.contains(",") ? presenceJson.split(",").length : 1;
+                        if (presenceJson != null && !presenceJson.isEmpty()) {
+                            java.util.regex.Matcher mp = java.util.regex.Pattern
+                                    .compile("\"online\"\\s*:\\s*\\[([^\\[\\]]*)\\]")
+                                    .matcher(presenceJson);
+                            if (mp.find()) {
+                                String inner = mp.group(1).trim();
+                                connectes = inner.isEmpty() ? 0 : inner.split("\\{").length - 1;
+                            } else if (presenceJson.contains("\"id_user\"")) {
+                                connectes = presenceJson.split("\"id_user\"").length - 1;
+                            }
                         }
                         return new int[]{stats[0], stats[1], stats[2], stats[3], stats[4], stats[5], connectes};
                     })

@@ -9,8 +9,11 @@ import com.neighborhood_manager.models.IncidentEntry;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.chart.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 
 import java.sql.*;
 import java.util.*;
@@ -23,6 +26,7 @@ public class StatistiquesController {
 
     @FXML private PieChart pieIncidents;
     @FXML private BarChart<String, Number> barRoles;
+    @FXML private BarChart<String, Number> barParticipations;
     @FXML private LineChart<String, Number> lineChart;
 
     @FXML private Label lblTotalVoisins;
@@ -30,6 +34,10 @@ public class StatistiquesController {
     @FXML private Label lblIncidentsOuverts;
     @FXML private Label lblTauxResolution;
     @FXML private Label lblDataSource;
+    @FXML private Label lblTotalEvenements;
+    @FXML private Label lblConfirmed;
+    @FXML private Label lblInterested;
+    @FXML private Label lblDeclined;
     @FXML private Button btnRefresh;
 
     @FXML
@@ -62,23 +70,34 @@ public class StatistiquesController {
                     return DatabaseConnection.loadCachedIncidentEntries();
                 });
 
-        // Voisins
-        CompletableFuture<Void> futureVoisins = ApiService.fetchVoisinsFromServer()
-                .thenAccept(json -> {
+        // Voisins — retourne la map id→email pour le graphique de participations
+        CompletableFuture<Map<Integer, String>> futureEmails = ApiService.fetchVoisinsFromServer()
+                .thenApply(json -> {
                     int total = json.split("\\{\\s*\"id_user\"").length - 1;
                     Map<String, Integer> roles = parseRoles(json);
+                    Map<Integer, String> emails = parseUserEmailsById(json);
                     Platform.runLater(() -> {
                         if (lblTotalVoisins != null) lblTotalVoisins.setText(String.valueOf(total));
                         updateBarChart(roles);
                     });
+                    return emails;
                 })
-                .exceptionally(ex -> { Platform.runLater(this::loadVoisinsFromCache); return null; });
+                .exceptionally(ex -> { Platform.runLater(this::loadVoisinsFromCache); return new LinkedHashMap<>(); });
+        CompletableFuture<Void> futureVoisins = futureEmails.thenAccept(ignored -> {});
 
         // Présence
         CompletableFuture<Void> futurePresence = ApiService.fetchPresenceUsers()
                 .thenAccept(json -> {
-                    int count = (json != null && !json.equals("[]") && !json.isBlank() && json.contains("{"))
-                            ? json.split("\\{").length - 1 : 0;
+                    int count = 0;
+                    if (json != null && !json.isBlank()) {
+                        Matcher mp = Pattern.compile("\"online\"\\s*:\\s*\\[([^\\[\\]]*)\\]").matcher(json);
+                        if (mp.find()) {
+                            String inner = mp.group(1).trim();
+                            count = inner.isEmpty() ? 0 : inner.split("\\{").length - 1;
+                        } else if (json.contains("\"id_user\"")) {
+                            count = json.split("\"id_user\"").length - 1;
+                        }
+                    }
                     final int fc = count;
                     Platform.runLater(() -> { if (lblEnLigne != null) lblEnLigne.setText(String.valueOf(fc)); });
                 })
@@ -106,14 +125,43 @@ public class StatistiquesController {
 
             Platform.runLater(() -> {
                 updatePieChart(ouverts, resolus);
-                updateLineChart(allStatuts);
+                updateLineChart(signaux, incidents);
                 updateIncidentCards(ouverts, resolus);
                 setDataSource("Données en temps réel — API (" + signaux.size() + " signalements + " + incidents.size() + " incidents)");
             });
         });
 
+        // Participations — retourne la map id→count pour la combiner avec les emails
+        CompletableFuture<Map<Integer, Integer>> futurePartCounts = ApiService.fetchStatsParticipations()
+                .thenApply(json -> {
+                    int total      = extractInt(json, "totalEvenements");
+                    int confirmed  = extractInt(json, "confirmed");
+                    int interested = extractInt(json, "interested");
+                    int declined   = extractInt(json, "declined");
+                    Platform.runLater(() -> {
+                        if (lblTotalEvenements != null) lblTotalEvenements.setText(String.valueOf(total));
+                        if (lblConfirmed != null)       lblConfirmed.setText(String.valueOf(confirmed));
+                        if (lblInterested != null)      lblInterested.setText(String.valueOf(interested));
+                        if (lblDeclined != null)        lblDeclined.setText(String.valueOf(declined));
+                    });
+                    return parseParUtilisateur(json);
+                })
+                .exceptionally(ex -> {
+                    System.err.println("[Stats] /stats/participations : " + ex.getMessage());
+                    return new LinkedHashMap<>();
+                });
+
+        // Graphique participations : attend les 2 futures pour afficher email + clic
+        CompletableFuture<Void> futureParticipations = CompletableFuture.allOf(futureEmails, futurePartCounts)
+                .thenAccept(v -> {
+                    Map<Integer, String>  emails = futureEmails.join();
+                    Map<Integer, Integer> counts = futurePartCounts.join();
+                    Platform.runLater(() -> updateParticipationChart(counts, emails));
+                })
+                .exceptionally(ex -> { System.err.println("[Stats] graphique participations : " + ex.getMessage()); return null; });
+
         // Libère le bouton quand tout est terminé
-        CompletableFuture.allOf(futureSignal, futureIncident, futureVoisins, futurePresence)
+        CompletableFuture.allOf(futureSignal, futureIncident, futureVoisins, futurePresence, futureParticipations)
                 .thenRun(() -> Platform.runLater(() -> setRefreshing(false)));
     }
 
@@ -136,7 +184,7 @@ public class StatistiquesController {
         long resolus = allStatuts.stream().filter("Résolu"::equals).count();
 
         updatePieChart(ouverts, resolus);
-        updateLineChart(allStatuts);
+        updateLineChart(signaux, incidents);
         updateIncidentCards(ouverts, resolus);
     }
 
@@ -198,30 +246,25 @@ public class StatistiquesController {
         barRoles.getData().setAll(series);
     }
 
-    /**
-     * Découpe la liste combinée de statuts en 5 lots max et trace deux séries :
-     * "En cours" et "Résolus".
-     */
-    private void updateLineChart(List<String> allStatuts) {
+    private void updateLineChart(List<Incident> signaux, List<IncidentEntry> incidents) {
         if (lineChart == null) return;
         lineChart.getData().clear();
-        if (allStatuts.isEmpty()) return;
 
-        int batchSize = Math.max(1, (allStatuts.size() + 4) / 5);
-        XYChart.Series<String, Number> seriesOpen     = new XYChart.Series<>();
-        XYChart.Series<String, Number> seriesResolved = new XYChart.Series<>();
+        long sigOuverts  = signaux.stream().filter(i -> "En cours".equals(i.getStatut())).count();
+        long sigResolus  = signaux.stream().filter(i -> "Résolu".equals(i.getStatut())).count();
+        long incOuverts  = incidents.stream().filter(i -> "En cours".equals(i.getStatut())).count();
+        long incResolus  = incidents.stream().filter(i -> "Résolu".equals(i.getStatut())).count();
+
+        XYChart.Series<String, Number> seriesOpen = new XYChart.Series<>();
         seriesOpen.setName("En cours");
-        seriesResolved.setName("Résolus");
+        seriesOpen.getData().add(new XYChart.Data<>("Signalements", sigOuverts));
+        seriesOpen.getData().add(new XYChart.Data<>("Incidents", incOuverts));
 
-        int batchIdx = 1;
-        for (int i = 0; i < allStatuts.size(); i += batchSize) {
-            List<String> batch = allStatuts.subList(i, Math.min(i + batchSize, allStatuts.size()));
-            long open     = batch.stream().filter("En cours"::equals).count();
-            long resolved = batch.stream().filter("Résolu"::equals).count();
-            String label  = "Lot " + batchIdx++;
-            seriesOpen.getData().add(new XYChart.Data<>(label, open));
-            seriesResolved.getData().add(new XYChart.Data<>(label, resolved));
-        }
+        XYChart.Series<String, Number> seriesResolved = new XYChart.Series<>();
+        seriesResolved.setName("Résolus");
+        seriesResolved.getData().add(new XYChart.Data<>("Signalements", sigResolus));
+        seriesResolved.getData().add(new XYChart.Data<>("Incidents", incResolus));
+
         lineChart.getData().addAll(seriesOpen, seriesResolved);
     }
 
@@ -313,5 +356,75 @@ public class StatistiquesController {
 
     private void setDataSource(String text) {
         if (lblDataSource != null) lblDataSource.setText(text);
+    }
+
+    private int extractInt(String json, String key) {
+        Matcher m = Pattern.compile("\"" + key + "\"\\s*:\\s*(\\d+)").matcher(json);
+        return m.find() ? Integer.parseInt(m.group(1)) : 0;
+    }
+
+    private Map<Integer, Integer> parseParUtilisateur(String json) {
+        Map<Integer, Integer> map = new LinkedHashMap<>();
+        Matcher mBlock = Pattern.compile("\"parUtilisateur\"\\s*:\\s*\\{([^}]*)\\}").matcher(json);
+        if (mBlock.find()) {
+            Matcher mPair = Pattern.compile("\"(\\d+)\"\\s*:\\s*(\\d+)").matcher(mBlock.group(1));
+            while (mPair.find()) {
+                map.put(Integer.parseInt(mPair.group(1)), Integer.parseInt(mPair.group(2)));
+            }
+        }
+        return map;
+    }
+
+    private Map<Integer, String> parseUserEmailsById(String json) {
+        Map<Integer, String> map = new LinkedHashMap<>();
+        String[] blocks = json.split("\\{\\s*\"id_user\"");
+        for (int i = 1; i < blocks.length; i++) {
+            String block = blocks[i];
+            Matcher mId    = Pattern.compile("^\\s*:\\s*(\\d+)").matcher(block);
+            Matcher mEmail = Pattern.compile("\"email\"\\s*:\\s*\"([^\"]+)\"").matcher(block);
+            if (mId.find() && mEmail.find()) {
+                map.put(Integer.parseInt(mId.group(1)), mEmail.group(1));
+            }
+        }
+        return map;
+    }
+
+    private void updateParticipationChart(Map<Integer, Integer> data, Map<Integer, String> emails) {
+        if (barParticipations == null || data.isEmpty()) return;
+        barParticipations.getData().clear();
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Participations par utilisateur");
+        for (Map.Entry<Integer, Integer> e : data.entrySet()) {
+            int    userId = e.getKey();
+            int    count  = e.getValue();
+            String email  = emails.getOrDefault(userId, "U" + userId);
+            String label  = email.contains("@") ? email.split("@")[0] : email;
+
+            XYChart.Data<String, Number> bar = new XYChart.Data<>(label, count);
+            final String fullEmail = email;
+            bar.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode == null) return;
+                newNode.setStyle("-fx-cursor: hand;");
+                Tooltip.install(newNode, new Tooltip(fullEmail + "\n" + count + " participation(s)"));
+                newNode.setOnMouseClicked(ev -> showUserDialog(userId, fullEmail, count));
+            });
+            series.getData().add(bar);
+        }
+        barParticipations.getData().setAll(series);
+    }
+
+    private void showUserDialog(int userId, String email, int participations) {
+        Alert dialog = new Alert(Alert.AlertType.CONFIRMATION);
+        dialog.setTitle("Fiche utilisateur");
+        dialog.setHeaderText("Utilisateur #" + userId);
+        dialog.setContentText(
+                "Email : " + email + "\n" +
+                "Participations aux événements : " + participations + "\n\n" +
+                "Voir dans la liste des voisins ?");
+        dialog.showAndWait().ifPresent(bt -> {
+            if (bt == ButtonType.OK && PrimaryController.instance != null) {
+                PrimaryController.instance.navigateToVoisins();
+            }
+        });
     }
 }

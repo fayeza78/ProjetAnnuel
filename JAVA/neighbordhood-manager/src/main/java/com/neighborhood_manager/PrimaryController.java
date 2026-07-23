@@ -36,6 +36,8 @@ import javafx.scene.shape.Circle;
 
 public class PrimaryController {
 
+    public static PrimaryController instance;
+
     @FXML private Button btnHome, btnVoisins, btnAnnonces, btnMessages, btnIncidents, btnStats, btnPlugins, btnProfil;
     @FXML private VBox mainContent;
 
@@ -53,6 +55,7 @@ public class PrimaryController {
 
     @FXML
     public void initialize() {
+        instance = this;
         setActive(btnHome);
         homeNodes = new ArrayList<>(mainContent.getChildren());
 
@@ -98,8 +101,18 @@ public class PrimaryController {
         // Voisins en ligne
         ApiService.fetchPresenceUsers()
                 .thenAccept(json -> {
-                    int count = (json != null && !json.equals("[]") && !json.isBlank() && json.contains("{"))
-                            ? json.split("\\{").length - 1 : 0;
+                    int count = 0;
+                    if (json != null && !json.isBlank()) {
+                        java.util.regex.Matcher m = java.util.regex.Pattern
+                                .compile("\"online\"\\s*:\\s*\\[([^\\[\\]]*)\\]")
+                                .matcher(json);
+                        if (m.find()) {
+                            String inner = m.group(1).trim();
+                            count = inner.isEmpty() ? 0 : inner.split("\\{").length - 1;
+                        } else if (json.contains("\"id_user\"")) {
+                            count = json.split("\"id_user\"").length - 1;
+                        }
+                    }
                     final int fc = count;
                     Platform.runLater(() -> { if (lblNbVoisinsOnline != null) lblNbVoisinsOnline.setText(String.valueOf(fc)); });
                 })
@@ -290,7 +303,9 @@ public class PrimaryController {
 
     // ======================== NAVIGATION ========================
 
-    @FXML private void goVoisins()   { setActive(btnVoisins);   loadView("voisins-list");        }
+    @FXML private void goVoisins()   { navigateToVoisins(); }
+
+    public void navigateToVoisins() { setActive(btnVoisins); loadView("voisins-list"); }
     @FXML private void goAnnonces()  { setActive(btnAnnonces);  }
     @FXML private void goMessages()  { setActive(btnMessages);  }
     @FXML private void goIncidents() { setActive(btnIncidents); loadView("incidents-list");      }
