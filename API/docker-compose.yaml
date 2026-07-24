@@ -1,0 +1,148 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: MONGODB_CONTAINER
+    restart: unless-stopped
+    ports:
+      # Lié à 127.0.0.1 uniquement : accessible par l'hôte mais PAS depuis Internet.
+      - "127.0.0.1:27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: Neighbours
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - cn_network
+
+  neo4j:
+    image: neo4j:5
+    container_name: NEO4J_CONTAINER
+    restart: unless-stopped
+    ports:
+      # Lié à 127.0.0.1 uniquement (interface web 7474 + bolt 7687) : pas exposé à Internet.
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/neo4jadmin
+
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - cn_network
+
+  postgres:
+    image: postgres:16
+    container_name: POSTGRES_CONTAINER
+    restart: unless-stopped
+    ports:
+      # Lié à 127.0.0.1 uniquement : accessible par l'hôte mais PAS depuis Internet.
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: connected_neighbours
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cn_network
+
+  # ── Application : API Node.js / Express ────────────────────────────
+  api:
+    build:
+      context: .
+    container_name: API_CONTAINER
+    restart: unless-stopped
+    # Reprend les secrets/creds du .env, puis on force les hôtes des bases sur les
+    # NOMS DE SERVICES Docker (le réseau cn_network) au lieu de localhost.
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      POSTGRES_HOST: postgres
+      MONGO_HOST: mongodb
+      NEO4J_HOST: neo4j
+    depends_on:
+      - postgres
+      - mongodb
+      - neo4j
+    ports:
+      # Exposée publiquement sur :3000 (comme avant avec PM2) : nécessaire pour
+      # Swagger (/api-docs) et l'accès DIRECT du client Java (SSO, /sync, /stats).
+      # Seules les BASES restent en 127.0.0.1 ; l'API est protégée par auth + rate-limit.
+      - "3000:3000"
+    volumes:
+      # Fichiers écrits à l'exécution (PDF de contrats, photos, vocaux). Sans ce
+      # montage ils vivraient dans le conteneur et seraient perdus à chaque rebuild.
+      - ./uploads:/app/uploads
+      # Archive .zip du client Java (générée par prod.sh), lecture seule, servie par
+      # la route admin GET /api/admin/telecharger-app-java.
+      - ./private:/app/private:ro
+    networks:
+      - cn_network
+
+  # ── Application : Front React servi par nginx ──────────────────────
+  front:
+    build:
+      context: /var/www/html/Front
+    container_name: FRONT_CONTAINER
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - cn_network
+
+  # ══════════════════════════════════════════════════════════════════
+  #  OUTILS DE VISUALISATION DES BASES DE DONNÉES
+  #  Démarrent AVEC le reste de la stack (docker compose up -d), donc
+  #  pris en compte par l'alias `prod`. Tous liés à 127.0.0.1 uniquement
+  #  (JAMAIS exposés à Internet) : on y accède via le tunnel SSH (vps2).
+  #
+  #  Récap des 3 bases (à ouvrir dans le navigateur, tunnel actif) :
+  #   • PostgreSQL  -> Adminer         http://localhost:8081
+  #   • MongoDB     -> mongo-express   http://localhost:8082
+  #   • Neo4j       -> Neo4j Browser   http://localhost:7474 (déjà intégré)
+  # ══════════════════════════════════════════════════════════════════
+
+  # ── Visualisation PostgreSQL (Adminer) ─────────────────────────────
+  adminer:
+    image: adminer:4
+    container_name: ADMINER_CONTAINER
+    restart: unless-stopped
+    environment:
+      # Serveur pré-rempli dans le formulaire de connexion (= nom du service Docker).
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - "127.0.0.1:8081:8080"
+    depends_on:
+      - postgres
+    networks:
+      - cn_network
+
+  # ── Visualisation MongoDB (mongo-express) ──────────────────────────
+  mongo-express:
+    image: mongo-express:1.0.2
+    container_name: MONGO_EXPRESS_CONTAINER
+    restart: unless-stopped
+    environment:
+      # Connexion au conteneur MongoDB via le réseau Docker (creds du compose).
+      ME_CONFIG_MONGODB_URL: mongodb://admin:admin@mongodb:27017/?authSource=admin
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      # Interface bornée à 127.0.0.1 -> on désactive l'auth basic (accès via tunnel SSH).
+      ME_CONFIG_BASICAUTH: "false"
+    ports:
+      - "127.0.0.1:8082:8081"
+    depends_on:
+      - mongodb
+    networks:
+      - cn_network
+
+volumes:
+  mongo_data:
+  neo4j_data:
+  postgres_data:
+
+networks:
+  cn_network:
+    driver: bridge
