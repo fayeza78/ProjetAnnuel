@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Contrat {{NUMERO_CONTRAT}}</title>
+<style>
+    body { font-family: Arial, Helvetica, sans-serif; max-width: 700px; margin: 40px auto; color: #222; line-height: 1.5; }
+    h1 { font-size: 20px; text-align: center; margin-bottom: 4px; }
+    .sous-titre { text-align: center; color: #666; margin-bottom: 30px; font-size: 13px; }
+    h2 { font-size: 14px; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 28px; }
+    .signatures { display: flex; gap: 40px; margin-top: 60px; }
+    .zone-signature { flex: 1; border: 1px solid #333; min-height: 90px; padding: 6px; font-size: 12px; color: #555; }
+    .image-signature { display: block; max-width: 100%; max-height: 60px; margin-top: 4px; }
+    .preuve-signature { font-size: 9px; color: #555; margin: 4px 0 0; }
+</style>
+</head>
+<body>
+    <h1>CONTRAT DE PRESTATION DE SERVICE ENTRE VOISINS</h1>
+    <p class="sous-titre">Connected Neighbours — Contrat n° {{NUMERO_CONTRAT}} — Fait le {{DATE}}</p>
+
+    <h2>Entre les soussignés</h2>
+    <p>
+        <strong>Le prestataire :</strong> {{PRESTATAIRE_EMAIL}} (utilisateur n° {{PRESTATAIRE_ID}})<br>
+        <strong>Le demandeur :</strong> {{DEMANDEUR_EMAIL}} (utilisateur n° {{DEMANDEUR_ID}})
+    </p>
+
+    <h2>Article 1 — Objet</h2>
+    <p>Le prestataire s'engage à réaliser le service « {{SERVICE_NOM}} » (service n° {{SERVICE_ID}})
+    au profit du demandeur, dans le cadre de la plateforme d'entraide Connected Neighbours.</p>
+
+    <h2>Article 2 — Prix</h2>
+    <p>Le service est convenu au prix de <strong>{{PRIX}} points</strong>, débités du solde du demandeur
+    et crédités au prestataire à la clôture du service (transfert sécurisé par la plateforme).</p>
+
+    <h2>Article 3 — Signature électronique</h2>
+    <p>Le présent contrat est signé électroniquement sur la plateforme, par un utilisateur authentifié.
+    Chaque signature est horodatée, associée à l'adresse IP du signataire et scellée par une empreinte
+    SHA-256 garantissant son intégrité.</p>
+
+    <!-- les commentaires SIGNATURE_* sont remplaces par l'API par l'image de la
+         signature et sa preuve (qui, quand, IP) une fois le contrat signe -->
+    <div class="signatures">
+        <div class="zone-signature">
+            Signature du prestataire
+            <!--SIGNATURE_PRESTATAIRE-->
+        </div>
+        <div class="zone-signature">
+            Signature du demandeur
+            <!--SIGNATURE_DEMANDEUR-->
+        </div>
+    </div>
+</body>
+</html>
